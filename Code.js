@@ -1,5 +1,5 @@
 /*
-test git
+
 Data structure for stored document properties 
 
 documentProperty {
