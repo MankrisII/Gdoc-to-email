@@ -1,0 +1,217 @@
+/*
+
+Data structure for stored document properties 
+
+documentProperty {
+  campaignNumber : String, // counts the number of campaigns sent. For display purposes
+  capainId : String, // brevo campaign id
+  campaignConf : JSON, // brevo campaign configuration
+  date : String, // campaign sending date "YYY-MM-DD"
+  campaignFolderId : String, // Gdrive campaign archive folder id
+  imagesCampaignFolderId : String, // Gdrive image's campaign archive folder id
+  buttons : string[], // list of buttons url
+  images : [
+    {
+      id : String,
+      url : String
+    }
+  ], // list of objects representing inserted images
+}
+
+some const are private and not displayed here
+
+const campainSenderName ;
+const campainSenderEmail ;
+const testCampaignToEmail ;
+const mairieApiKey ;
+const mairieApiUrl ;
+const brevoApiKey ;
+*/
+
+
+
+// list of default buttons url. Buttons that remains over campaigns
+const defaltButtonsUrl = ["https://www.dieulefit-tourisme.com/votre-sejour/agenda/tout-lagenda/"];
+// url of public storage for images displayed in html's campaigns
+const onlineImageFolder = 'https://mairie-dieulefit.fr/images/stories/contributeurs/actualites/a_la_une/2023/';
+// GDocs folder and files
+const archivedCampaignsFolderId = "1xd2xA-2wIfRgFT03TO1QHXMFTr3PQM8G"; // archives's folder for 2023 campains
+const nextCampaignfolderId = "1p2uEY2NKHsqckZwPH_uGOQFOH4W4lw8M"; // current folder of google doc
+const nextCampaignImageFolder = '1z91QeLl9o0V8v5_DiJ_zwtZLCqOIoHDU'; // storage folder for futur campaign images or docs (not the one who is curently creating)
+const nextCampainFileId = "1SfOEQED15_4t1upUk-ztXymMf6t7dP0hNw8uNBqm000"; // file for futur campaign (not the one who is curently creating)
+const currentFileId = "1GtqWZ9O1DQuP6OCaRYlDRnW1jdJvFVCFnzNuMreoUk0"; // current file, current creating campaign
+const documentProperties = PropertiesService.getDocumentProperties();
+
+
+// option for brevo API requests
+var brevoRequestOptions = {
+    'method' : 'POST',
+    'muteHttpExceptions': false ,
+    'contentType': 'application/json',
+    'headers' : {
+      'accept': 'application/json',
+      'api-key': brevoApiKey,
+      'content-type': 'application/json'
+    },
+    'payload' : ''
+}
+
+// default Brevo campaign configuration
+var defaultCampaignConf = {
+      "sender": {
+        'name': campainSenderName,
+        "email": campainSenderEmail
+      },
+      "inlineImageActivation": false,
+      "sendAtBestTime": false,
+      "abTesting": false,
+      "ipWarmupEnable": false,
+      'mirrorActive' : true,
+      "name": "",
+      "htmlContent": "",
+      "subject": "",
+      "toField": testCampaignToEmail
+    };
+
+// to store, during converting to html, if the processed item is the first heading3 after a heading2
+var firstH3 = false;
+
+// initialisation
+function onOpen() {
+  //checkCampaignStatus()
+  if(Session.getEffectiveUser().getEmail() == "mancini.christophe@gmail.com"){
+    DocumentApp.getUi()
+    .createMenu('Newsletter mairie')
+    .addItem('Creer une nouvelle campagne', 'menuCreateCampaign')
+    .addSubMenu(DocumentApp.getUi().createMenu('Configuration')
+      .addItem('Vérifier de statut de la campagne', 'menuCheckCampaignStatus')
+      .addItem('Afficher l\'id de la campagne', 'menuDisplayCampaignId')
+      .addSeparator()
+      .addItem('Afficher le numéro de la campagne', 'menuDisplayCampaignNumber')
+      .addItem('Modifier le numéro de la campagne', 'menuPromptSetCampaignNumber')
+      .addSeparator()
+      .addItem('Afficher le nom de la campagne', 'menuDisplayCampaignName')
+      .addSeparator()
+      .addItem('modifier la date d\'envoie de la campagne','menuPromptSetCampaignDate')
+    )
+    .addItem('Envoyer un test avec Brevo', 'menuSendTestWithBrevo')
+    .addItem('Envoyer le HTML par mail','sendHtmlByEmail')
+    .addItem('Archiver la newsletter', 'archiver')
+    .addItem('Envoyer le mail à la plénière', 'sendMailToPleniere')
+    .addSeparator()
+    .addItem('Inserer un bouton', 'menuAddButton')
+    .addItem('Inserer une image en ligne', 'menuAddinlineImage')
+    .addItem('Inserer une image positionnée', 'menuAddPositionedImage')
+    .addItem('test selection image', 'showDialog')
+    
+    .addToUi();
+  }
+  
+}
+
+// send an email to contributors to give the link of the Gdocs et the dead line
+function sendMailToPleniere(){
+  var campaignSendingDate = new Date(documentProperties.getProperty('date'))
+  var deadLineToContribute = new Date(campaignSendingDate.getTime() - 87000000)
+  var dateOptions = {  year: 'numeric', month: 'long', day: 'numeric' }
+  
+  var content = `Bonjour,
+
+Voici le fichier de la newsletter du ${campaignSendingDate.toLocaleDateString('fr-FR', dateOptions)} prochain :
+${DocumentApp.getActiveDocument().getUrl()}
+
+Vous avez jusqu’au ${deadLineToContribute.toLocaleDateString('fr-FR', dateOptions)} midi pour remplir vos infos et événements.
+
+Merci,`;
+Logger.log(content)
+  MailApp.sendEmail({
+     //to: Session.getActiveUser().getEmail(),
+     to : contributorsEmailsList,
+     subject: `Prochaine newsletter du ${campaignSendingDate.toLocaleDateString('fr-FR', dateOptions)}`,
+     body: content,
+   });
+}
+
+function getUserEmail(){
+  
+  var userEmail = Session.getEffectiveUser().getEmail();
+  Logger.log(userEmail)
+}
+
+// clear campaign folders properties
+function clearCampainFoldersIds(){
+  documentProperties.deleteProperty('campaignFolderId')
+   documentProperties.deleteProperty('imagesCampaignFolderId')
+}
+
+// update the title of the GDocs
+function updateDocTitle(){
+  //var numChildren = DocumentApp.getActiveDocument().getBody().getNumChildren()
+  //for(var i = 0; i < numChildren; i++){}
+  var range = DocumentApp.getActiveDocument().getBody().findText("Newsletter n°[0-9]* du [0-9]{1,2} .+ [0-9]{4}")
+  var element = range.getElement().getParent()
+  if(element.getHeading() != DocumentApp.ParagraphHeading.HEADING1)return
+  //Logger.log(element.getText())
+  //Logger.log(element.getType())
+  element.clear()
+  var date = new Date(documentProperties.getProperty('date'))
+  var num = documentProperties.getProperty('campaignNumber')
+  var dateOptions = {  year: 'numeric', month: 'long', day: 'numeric' }
+  var newTitle = `Newsletter n°${num} du ${date.toLocaleDateString('fr-FR', dateOptions)}`
+  element.appendText(newTitle)
+  element.setHeading(DocumentApp.ParagraphHeading.HEADING1)
+  element.setAlignment(DocumentApp.HorizontalAlignment.CENTER)
+  return
+}
+
+// send the doc converted to html by email
+function sendHtmlByEmail(){
+  var html = ConvertGoogleDocToCleanHtml();
+  emailHtml(html);
+}
+
+function emailHtml(html, images) {
+  var attachments = [];
+  /*for (var j=0; j<images.length; j++) {
+    attachments.push( {
+      "fileName": images[j].name,
+      "mimeType": images[j].type,
+      "content": images[j].blob.getBytes() } );
+  }
+
+  var inlineImages = {};
+  for (var j=0; j<images.length; j++) {
+    inlineImages[[images[j].name]] = images[j].blob;
+  }*/
+
+  var name = DocumentApp.getActiveDocument().getName()+".html";
+  attachments.push({"fileName":name, "mimeType": "text/html", "content": html});
+  MailApp.sendEmail({
+     to: Session.getActiveUser().getEmail(),
+     subject: name,
+     htmlBody: html,
+     attachments: attachments/*,
+     inlineImages: inlineImages,
+     */
+   });
+}
+
+
+// unuse ?
+function createDocumentForHtml(html, images) {
+  var name = DocumentApp.getActiveDocument().getName()+".html";
+  var newDoc = DocumentApp.create(name);
+  newDoc.getBody().setText(html);
+  for(var j=0; j < images.length; j++)
+    newDoc.getBody().appendImage(images[j].blob);
+  newDoc.saveAndClose();
+}
+
+// unuse ?
+function dumpAttributes(atts) {
+  // Log the paragraph attributes.
+  for (var att in atts) {
+    //Logger.log(att + ":" + atts[att]);
+  }
+}
+
