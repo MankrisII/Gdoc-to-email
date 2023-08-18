@@ -226,6 +226,7 @@ function ConvertGoogleDocToCleanHtml() {
   var body = DocumentApp.getActiveDocument().getBody();
   var numChildren = body.getNumChildren();
   var output = [];
+  var listCounters = {};
 
   // Walk through all the child elements of the body.
 
@@ -246,7 +247,7 @@ function ConvertGoogleDocToCleanHtml() {
       //Logger.log('start = true')
       continue;
     };
-    output.push(processItem(child));
+    output.push(processItem(child, listCounters,));
   }
 
   var dateString = documentProperties.getProperty('date')
@@ -300,7 +301,7 @@ function ConvertGoogleDocToCleanHtml() {
  * @param {*} item 
  * @returns string
  */
-function processItem(item) {
+function processItem(item, listCounters) {
   /*
   Logger.log('item.getType() = '+item.getType())
   if(item.hasOwnProperty("getText")){
@@ -310,7 +311,7 @@ function processItem(item) {
   
   var output = [];
   var prefix = "", suffix = "";
-  var listCounters = []
+  
   
   //Logger.log('type = '+item.getType())
   
@@ -440,7 +441,7 @@ function processItem(item) {
       // Walk through all the child elements of the doc.
       for (var i = 0; i < numChildren; i++) {
         var child = item.getChild(i);
-        output.push(processItem(child));
+        output.push(processItem(child, listCounters));
       }
     }
   }
