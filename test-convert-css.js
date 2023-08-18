@@ -6,7 +6,7 @@ var mediaQueries = `
     }
 }`
 
-var stylesStr =`
+var styles =`
 body {
     background-color: #F7F7F7;
     margin: 0;
@@ -25,7 +25,7 @@ body {
     background-color: #fff;
 }
 
-.centrer {
+.center {
     text-align: center;
 }
 
@@ -44,8 +44,6 @@ body {
 .flex-element-img {
     text-align: center;
 }
-
-
 
 .flex-element-text {
     width: 301px;
@@ -118,9 +116,14 @@ body {
 
 #content p,
 #content ol,
-#content ul {
+#content ul,
+#content li {
     font-family: georgia;
-    margin-bottom: 15px
+    margin-bottom: 15px;
+}
+
+#content li {
+    margin-bottom: 0px;
 }
 
 #content ol,
@@ -158,14 +161,14 @@ h1{
     padding-top: 30px;
     margin-top: 40px;
     font-size: 12px;
-} 
+}
 `;
 
 var stylesObj
 function processStyles() {
     stylesObj = {} 
     // delete all EOL folowed by white spaces
-    stylesStr = stylesStr.replaceAll(/\n\s*/g, "",)
+    stylesStr = styles.replaceAll(/\n\s*/g, "",)
     // delete all EOL
     stylesStr = stylesStr.replaceAll("\n", "",)
     //console.log(style)
@@ -206,7 +209,7 @@ function getStyles(name) {
 //processStyles()
 function processeHTML(){
   return `
-  <div ${getStyles('#content h3','body')}>
+  <div  ${getStyles('#content ul')}>
   `
 }
 console.log(processeHTML())

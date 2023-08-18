@@ -46,7 +46,7 @@ body {
 
 .flex-element-text {
     width: 301px;
-    margin-left: 15px
+    margin-left: 15px;
 }
 
 .flex-element-img {
@@ -118,16 +118,16 @@ body {
 #content ul,
 #content li {
     font-family: georgia;
-    margin-bottom: 15px
+    margin-bottom: 15px;
 }
 
 #content li {
-    margin-bottom: 0px
+    margin-bottom: 0px;
 }
 
 #content ol,
 #content ul {
-    padding-right: 15px
+    padding-right: 15px;
 }
 #header{
     font-weight: bold;
