@@ -1,5 +1,6 @@
 privateData.js
 .DS_Store
 .clasp.json
+.claspignore
 appsscript.json
 test-convert-css.js

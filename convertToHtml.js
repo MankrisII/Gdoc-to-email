@@ -5,7 +5,7 @@ var mediaQueries = `@media screen and (max-width: 600px) {
     }
 }`
 
-var style =`
+var styles =`
 body {
     background-color: #F7F7F7;
     margin: 0;
@@ -24,7 +24,7 @@ body {
     background-color: #fff;
 }
 
-.centrer {
+.center {
     text-align: center;
 }
 
@@ -115,9 +115,14 @@ body {
 
 #content p,
 #content ol,
-#content ul {
+#content ul,
+#content li {
     font-family: georgia;
     margin-bottom: 15px
+}
+
+#content li {
+    margin-bottom: 0px
 }
 
 #content ol,
@@ -165,7 +170,7 @@ var stylesObj
 function processStyles() {
   stylesObj = {}
   // delete all EOL folowed by white spaces
-  let stylesStr = stylesStr.replaceAll(/\n\s*/g, "",)
+  let stylesStr = styles.replaceAll(/\n\s*/g, "",)
   // delete all EOL
   stylesStr = stylesStr.replaceAll("\n", "",)
   
@@ -180,11 +185,16 @@ function processStyles() {
   for (let i in styleArr) {
       let names = styleArr[i][1].split(',')
       for (let n in names) {
-          let name = normalizedStyleName(names[n])
+        let name = normalizedStyleName(names[n])
+        if (stylesObj[name]) {
+          stylesObj[name] += styleArr[i][2]
+        } else {
+          
           stylesObj[name] = styleArr[i][2]
+        }
       }
   }
-  console.log(stylesObj)
+  //console.log(stylesObj)
 }
 
 /**
@@ -262,7 +272,7 @@ function ConvertGoogleDocToCleanHtml() {
               </head>
               <style>
                   ${mediaQueries}
-                  ${style}
+                  ${styles}
                   </style>
                 <body ${getStyles('body')}>
                   
@@ -327,7 +337,7 @@ function processItem(item, listCounters) {
 
     var imageData = getPositionImage(image.getId());
     //Logger.log(JSON.stringify(imageData))
-    output.push(`<div class="flex-container" ${getStyles('.flex-container')}>
+    output.push(`<div class="flex-container" ${getStyles('.flex-container','#content .flex-container')}>
                   <div class="flex-element flex-element-img" ${getStyles('.flex-element', '.flex-element-img')}>
                     <img class="img250" src="${imageData.url}" ${getStyles('#content .img250')}>
                   </div>
@@ -344,7 +354,7 @@ function processItem(item, listCounters) {
     let itemType = item.getType().toString()
     let itemText = item.getText()
     let url = item.getLinkUrl()
-    return `<p class="centrer" ${getStyles('.center')}>
+    return `<p class="center" ${getStyles('.center')}>
               <a href="${item.getLinkUrl()}" class="bouton" ${getStyles('#content .bouton')}>${item.getText()}</a>
             </p>`;
   }
@@ -396,18 +406,17 @@ function processItem(item, listCounters) {
       if (gt === DocumentApp.GlyphType.BULLET
           || gt === DocumentApp.GlyphType.HOLLOW_BULLET
           || gt === DocumentApp.GlyphType.SQUARE_BULLET) {
-        prefix = `<ul ${getStyles('#content ul')}><li>`, suffix = "</li>";
+        prefix = `<ul ${getStyles('#content ul')}>`;
 
         }
       else {
         // Ordered list (<ol>):
-        prefix = `<ol ${getStyles('#content ol')}><li>`, suffix = "</li>";
+        prefix = `<ol ${getStyles('#content ol')}>`;
       }
     }
-    else {
-      prefix = "<li>";
-      suffix = "</li>";
-    }
+    prefix += `<li ${getStyles('#content li')}>`;
+    suffix = "</li>";
+    
 
     if (item.isAtDocumentEnd() || (item.getNextSibling() && (item.getNextSibling().getType() != DocumentApp.ElementType.LIST_ITEM))) {
       if (gt === DocumentApp.GlyphType.BULLET
@@ -493,7 +502,7 @@ function processText(item, output) {
       var partText = text.substring(startPos, endPos);
       var linkUrl = item.getLinkUrl(startPos) ? item.getLinkUrl(startPos) : null
 
-      partText = partText.replace("\r","</br>")
+      partText = partText.replace("\r","<br>")
       //Logger.log("partText = "+partText)
       //Logger.log("partText2 = "+partText2)
 

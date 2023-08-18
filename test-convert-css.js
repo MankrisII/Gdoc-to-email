@@ -176,7 +176,12 @@ function processStyles() {
         let names = styleArr[i][1].split(',')
         for (let n in names) {
             let name = normalizedStyleName(names[n])
-            stylesObj[name] = styleArr[i][2]
+        if (stylesObj[name]) {
+          stylesObj[name] += styleArr[i][2]
+        } else {
+          
+          stylesObj[name] = styleArr[i][2]
+        }
         }
     }
     console.log(stylesObj)
@@ -201,8 +206,8 @@ function getStyles(name) {
 //processStyles()
 function processeHTML(){
   return `
-  <div ${getStyles('#header-left p','body')}>
+  <div ${getStyles('#content h3','body')}>
   `
 }
-//console.log(processeHTML())
+console.log(processeHTML())
 
