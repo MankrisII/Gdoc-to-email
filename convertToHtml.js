@@ -1,3 +1,10 @@
+var mediaQueries = `@media screen and (max-width: 600px) {
+    .flex-element {
+        width: 100% !important;
+        margin-left: 0 !important;
+    }
+}`
+
 var style =`
 body {
     background-color: #F7F7F7;
@@ -35,13 +42,6 @@ body {
 
 .flex-element-img {
     text-align: center;
-}
-
-@media screen and (max-width: 600px) {
-    .flex-element {
-        width: 100% !important;
-        margin-left: 0 !important;
-    }
 }
 
 .flex-element-text {
@@ -158,184 +158,87 @@ h1{
 }
 `;
 
-// var ostyle ={
-// body {
-//     background-color: #F7F7F7;
-//     margin: 0;
-// }
+var stylesObj
+/**
+ * Trasform CSS style above declare in "style" const to an object
+ */
+function processStyles() {
+  stylesObj = {}
+  // delete all EOL folowed by white spaces
+  let stylesStr = stylesStr.replaceAll(/\n\s*/g, "",)
+  // delete all EOL
+  stylesStr = stylesStr.replaceAll("\n", "",)
+  
+  //explode styles défintions into an array
+  let styleArr = [...stylesStr.matchAll(/([^\{]*)\{([^\}]*)\}/g)]
+  
+  // convert styleArr to an object like 
+  // {
+  //     '#content_p': 'background-color : #fefefe',
+  //     'h1' : 'color:#fff'
+  // }
+  for (let i in styleArr) {
+      let names = styleArr[i][1].split(',')
+      for (let n in names) {
+          let name = normalizedStyleName(names[n])
+          stylesObj[name] = styleArr[i][2]
+      }
+  }
+  console.log(stylesObj)
+}
 
-// .gridColumnWrapper {
-//     margin: 0;
-// }
+/**
+ * normalize definition name chain
+ * #header p.classname => #header_p.classname
+ * 
+ * @param {string} name 
+ * @returns string
+ */
+function normalizedStyleName(name) {
+  return name.trim().replaceAll(' ','_')
+}
 
-// #content {
-//     text-align: left;
-//     font-size: 18px;
-//     max-width: 600px;
-//     width: 100%;
-//     margin: auto;
-//     background-color: #fff;
-// }
+/**
+ * return the style corresponding to the definition name
+ * can get multiple string arguments
+ * 
+ * @param {string} name 
+ * @returns string
+ */
+function getStyles() {
+  if (!stylesObj) {
+    processStyles()
+  }
+  
+  let styles = ''
+  for (let n in arguments) {
+      styles += stylesObj[normalizedStyleName(arguments[n])]
+  }
+  return `style="${styles}"`
+}
 
-// .centrer {
-//     text-align: center;
-// }
-
-// #content h3,
-// #content p,
-// #content .flex-container{
-//     margin-left : 15px;
-//     margin-right : 15px;
-// }
-
-// .flex-container {
-//     display: flex;
-//     flex-wrap: wrap;
-// }
-
-// .flex-element-img {
-//     text-align: center;
-// }
-
-// @media screen and (max-width: 600px) {
-//     .flex-element {
-//         width: 100% !important;
-//         margin-left: 0 !important;
-//     }
-// }
-
-// .flex-element-text {
-//     width: 301px;
-//     margin-left: 15px
-// }
-
-// .flex-element-img {
-//     width: 250px;
-// }
-
-// .flex-element p {
-//     padding: 0;
-//     margin-left: 0!important;
-//     margin-right: 0!important;
-// }
-
-// #content .bouton {
-//     font-size: 17px;
-//     display: inline-block;
-//     padding: 5px 20px;
-//     border-radius: 50px;
-//     text-decoration: none;
-//     margin: 10px 0;
-//     background-color: #FFA000;
-//     color: #ffffff;
-//     font-weight: bold;
-// }
-
-
-// #content .img250 {
-//     margin-top: 6px;
-//     margin-bottom: 10px;
-//     width: 100%;
-// }
-
-// #content .img600 {}
-
-// #content .img600 img {
-//     width: 100%;
-// }
-
-// #content h2 {
-//     background-color: #B1D027;
-//     color: #fff;
-//     font-family: arial;
-//     font-size: 25px;
-//     font-style: italic;
-//     padding: 4px 15px;
-// }
-
-// #content h3 {
-//     font-size: 24px;
-//     font-family: georgia;
-//     font-style: italic;
-//     color: #ec0c80;
-//     margin-top: 27px;
-//     border-top: 1px solid #ae9e9e;
-//     padding-top: 15px;
-// }
-
-// .firstH3 {
-//     border-top: 0;
-//     padding-top: 0;
-//     margin-top: 15px;
-// }
-
-// #content p {
-//     margin-top: 0;
-// }
-
-// #content p,
-// #content ol,
-// #content ul {
-//     font-family: georgia;
-//     margin-bottom: 15px
-// `,
-// "#content ol,
-// #content ul {
-//     padding-right: 15px
-// `,
-// "#header{
-//     font-weight: bold;
-//     margin: 0!important;
-// `,
-// "h1{
-//     background-color: #DCDBDB;
-//     font-style: italic;
-//     font-size: 22px;
-//     font-family: georgia;
-//     padding: 12px 15px;
-// `,
-// "#logo-container" : `
-//     width: 32%;
-//     text-align: center;
-//     padding-top: 20px;
-
-// `,
-// "#header-left" : `
-//     width: 68%;
-// `,
-
-
-// "#header-left p" :`
-//     margin-right: 15px!important;
-//     margin-left: 15px!important;
-// `,
-// "#footer" : `
-//     text-align: center;
-//     background-color: #F7F7F7;
-//     padding-top: 30px;
-//     margin-top: 40px;
-//     font-size: 12px;`
-
-// }
-
-
+/**
+ * Convert the google doc to html
+ * 
+ * @returns string
+ */
 function ConvertGoogleDocToCleanHtml() {
   var body = DocumentApp.getActiveDocument().getBody();
   var numChildren = body.getNumChildren();
   var output = [];
-  var images = [];
-  var listCounters = {};
 
   // Walk through all the child elements of the body.
+
+  // ignore first part of the Gdoc containing user instructions to feel the Gdoc
   var start = false;
-  //Logger.log("DocumentApp.ParagraphHeading.HEADING1 = "+DocumentApp.ParagraphHeading.HEADING1)
+  
   for (var i = 0; i < numChildren; i++) {
-    
     var child = body.getChild(i);
     //Logger.log("child.getHeading() = "+child.getHeading())
     //Logger.log("child.getHeading() != DocumentApp.ParagraphHeading.HEADING1 = "+(child.getHeading() != DocumentApp.ParagraphHeading.HEADING1))
     
     //Logger.log('child.getType() = '+child.getType())
+    // does not start the conversion until it reaches the starting point defined by the paragraph DocumentApp.ParagraphHeading.HEADING1
     if(!start && child.getHeading() != DocumentApp.ParagraphHeading.HEADING1) {
       continue;
     }else if(!start){
@@ -343,7 +246,7 @@ function ConvertGoogleDocToCleanHtml() {
       //Logger.log('start = true')
       continue;
     };
-    output.push(processItem(child, listCounters, images));
+    output.push(processItem(child));
   }
 
   var dateString = documentProperties.getProperty('date')
@@ -357,26 +260,27 @@ function ConvertGoogleDocToCleanHtml() {
                 <title>${getCampaignSubject()}</title>
               </head>
               <style>
+                  ${mediaQueries}
                   ${style}
                   </style>
-                <body>
+                <body ${getStyles('body')}>
                   
                   
-                    <div id="content">
-                    <div class="flex-container" id="header">
-                      <div id="header-left" class="flex-element">
-                          <h1>Lettre d'information de Dieulefit</h1>
-                          <p>n°${getCampaignNumber()} - ${date.toLocaleDateString('fr-FR', dateOptions)}<br/>
+                    <div id="content" ${getStyles('#content')}>
+                    <div class="flex-container" id="header" ${getStyles('#header','#content .flex-container','.flex-container')}>
+                      <div id="header-left" class="flex-element" ${getStyles('#header-left')}>
+                          <h1 ${getStyles('h1')}>Lettre d'information de Dieulefit</h1>
+                          <p ${getStyles('#header-left_p')}>n°${getCampaignNumber()} - ${date.toLocaleDateString('fr-FR', dateOptions)}<br/>
                           <a href="//www.mairie-dieulefit.fr/">https://www.mairie-dieulefit.fr/</a></p>
                       </div>
-                      <div id="logo-container"class="flex-element">
+                      <div id="logo-container" class="flex-element" ${getStyles("#logo-container",".flex-element")}>
                           <img src="https://img.mailinblue.com/5899350/images/content_library/original/6426f218849cd96ad040ed48.jpg" alt="logo Dieulefit">
                       </div>
                     </div>`;
                     
                     html += output.join('\r');
                     html += `
-                    <div id="footer">
+                    <div id="footer" ${getStyles('#footer')}>
                         <p><strong>Maire de Dieulefit</strong><br/>
                         1 rue justin jouve, 26220, Dieulefit</p>
                         <p>Cet email a été envoyé à {{ contact.EMAIL }}</p>
@@ -390,8 +294,13 @@ function ConvertGoogleDocToCleanHtml() {
   return html;
 }
 
-function processItem(item, listCounters, images) {
-  //Logger.log("processItem ----")
+/**
+ * Convert each Gdoc item to HTML
+ * 
+ * @param {*} item 
+ * @returns string
+ */
+function processItem(item) {
   /*
   Logger.log('item.getType() = '+item.getType())
   if(item.hasOwnProperty("getText")){
@@ -401,12 +310,11 @@ function processItem(item, listCounters, images) {
   
   var output = [];
   var prefix = "", suffix = "";
+  var listCounters = []
   
-  let itemType = item.getType().toString()
   //Logger.log('type = '+item.getType())
   
-
-  //traitrement des images positionnée atachée aux éléments
+  // process positioned images
   var positionedImage = false
   
   if(typeof item.getPositionedImages != "undefined" && item.getPositionedImages().length >0){
@@ -418,15 +326,15 @@ function processItem(item, listCounters, images) {
 
     var imageData = getPositionImage(image.getId());
     //Logger.log(JSON.stringify(imageData))
-    output.push(`<div class="flex-container">
-                  <div class="flex-element flex-element-img">
-                    <img class="img250" src="${imageData.url}">
+    output.push(`<div class="flex-container" ${getStyles('.flex-container')}>
+                  <div class="flex-element flex-element-img" ${getStyles('.flex-element', '.flex-element-img')}>
+                    <img class="img250" src="${imageData.url}" ${getStyles('#content .img250')}>
                   </div>
-                  <div class="flex-element flex-element-text">`);
+                  <div class="flex-element flex-element-text" ${getStyles('.flex-element', '.flex-element-text')}>`);
     //Logger.log("url = "+imageData.url)
   }
 
-  // traitement des bouttons
+  // process buttons
   //Logger.log('item.hasOwnProperty(getLinkUrl) = '+item.hasOwnProperty('getLinkUrl'))
   let itemIsButton = false;
   if(item.hasOwnProperty('getLinkUrl') && item.getLinkUrl() && isButton(item.getLinkUrl())){
@@ -435,13 +343,16 @@ function processItem(item, listCounters, images) {
     let itemType = item.getType().toString()
     let itemText = item.getText()
     let url = item.getLinkUrl()
-    return`<p class="centrer"><a href="${item.getLinkUrl()}" class="bouton">${item.getText()}</a></p>`;
+    return `<p class="centrer" ${getStyles('.center')}>
+              <a href="${item.getLinkUrl()}" class="bouton" ${getStyles('#content .bouton')}>${item.getText()}</a>
+            </p>`;
   }
- 
+
+  // process paragraph elements
   else if (item.getType() == DocumentApp.ElementType.PARAGRAPH) {
     
     switch (item.getHeading()) {
-        // Add a # for each heading level. No break, so we accumulate the right number.
+       
       case DocumentApp.ParagraphHeading.HEADING6: 
         prefix = "<h6>", suffix = "</h6>"; break;
       case DocumentApp.ParagraphHeading.HEADING5: 
@@ -450,27 +361,27 @@ function processItem(item, listCounters, images) {
         prefix = "<h4>", suffix = "</h4>"; break;
       case DocumentApp.ParagraphHeading.HEADING3:
         if(firstH3){
-          prefix = '<h3 class="firstH3">';
+          prefix = `<h3 class="firstH3" ${getStyles('#content h3','#content h3.firstH3')}>`;
           firstH3 = false;
         }else{
-          prefix = "<h3>";
+          prefix = `<h3 ${getStyles('#content h3')}>`;
         }
         suffix = "</h3>"; 
         break;
       case DocumentApp.ParagraphHeading.HEADING2:
-        prefix = "<h2>", suffix = "</h2>"; 
+        prefix = `<h2 ${getStyles('#content h2')}>`, suffix = "</h2>"; 
         firstH3 = true;
         break;
       case DocumentApp.ParagraphHeading.HEADING1:
-        prefix = "<h1>", suffix = "</h1>"; break;
+        prefix = `<h1 ${getStyles('h1')}>`, suffix = "</h1>"; break;
       default: 
-        prefix = "<p>", suffix = "</p>";
+        prefix = `<p ${getStyles('#content p')}>`, suffix = "</p>";
     }
 
     if (item.getNumChildren() == 0) return "";
 
   }else if (item.getType() == DocumentApp.ElementType.INLINE_IMAGE){
-    output.push(`<div class="img600"><img src="${item.getAltDescription()}"/></div>`)
+    output.push(`<div class="img600"><img ${getStyles('#content .img600 img')} src="${item.getAltDescription()}"/></div>`)
     //processImage(item, images, output);
   }else if (item.getType() === DocumentApp.ElementType.LIST_ITEM) {
     var listItem = item;
@@ -484,12 +395,12 @@ function processItem(item, listCounters, images) {
       if (gt === DocumentApp.GlyphType.BULLET
           || gt === DocumentApp.GlyphType.HOLLOW_BULLET
           || gt === DocumentApp.GlyphType.SQUARE_BULLET) {
-        prefix = '<ul><li>', suffix = "</li>";
+        prefix = `<ul ${getStyles('#content ul')}><li>`, suffix = "</li>";
 
         }
       else {
         // Ordered list (<ol>):
-        prefix = "<ol><li>", suffix = "</li>";
+        prefix = `<ol ${getStyles('#content ol')}><li>`, suffix = "</li>";
       }
     }
     else {
@@ -529,7 +440,7 @@ function processItem(item, listCounters, images) {
       // Walk through all the child elements of the doc.
       for (var i = 0; i < numChildren; i++) {
         var child = item.getChild(i);
-        output.push(processItem(child, listCounters, images));
+        output.push(processItem(child));
       }
     }
   }
@@ -662,20 +573,3 @@ function processImage(item, images, output)
     "name": name});
 }
 
-function processStyles() {
-  
-  style = style.replaceAll(/\n\s*/g, "",)
-  style = style.replaceAll("\n", "",)
-  console.log(style)
-  var matches = [...style.matchAll(/([^\{]*)\{([^\}]*)\}/g)]
-  matches = matches.map(m => {
-    return o = {
-      definition: m[1].trim(),
-      styles : m[2]
-    }
-  })
-}
-
-function getStyles(definition) {
-  return `style="${matches.filter(m => m.definition.match(definition)).map(m => m.styles).join(";")}"`
-}

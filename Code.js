@@ -29,9 +29,8 @@ const brevoApiKey ;
 */
 
 
-
 // list of default buttons url. Buttons that remains over campaigns
-const defaltButtonsUrl = ["https://www.dieulefit-tourisme.com/votre-sejour/agenda/tout-lagenda/"];
+const defaltButtonsUrls = ["https://www.dieulefit-tourisme.com/votre-sejour/agenda/tout-lagenda/"];
 // url of public storage for images displayed in html's campaigns
 const onlineImageFolder = 'https://mairie-dieulefit.fr/images/stories/contributeurs/actualites/a_la_une/2023/';
 // GDocs folder and files
@@ -50,7 +49,7 @@ var brevoRequestOptions = {
     'contentType': 'application/json',
     'headers' : {
       'accept': 'application/json',
-      'api-key': brevoApiKey,
+      'api-key': '',
       'content-type': 'application/json'
     },
     'payload' : ''
@@ -59,8 +58,8 @@ var brevoRequestOptions = {
 // default Brevo campaign configuration
 var defaultCampaignConf = {
       "sender": {
-        'name': campainSenderName,
-        "email": campainSenderEmail
+        'name': '', //campainSenderName
+        "email": '', //campainSenderEmail
       },
       "inlineImageActivation": false,
       "sendAtBestTime": false,
@@ -70,7 +69,7 @@ var defaultCampaignConf = {
       "name": "",
       "htmlContent": "",
       "subject": "",
-      "toField": testCampaignToEmail
+      "toField": '', //testCampaignToEmail
     };
 
 // to store, during converting to html, if the processed item is the first heading3 after a heading2
@@ -148,14 +147,14 @@ function clearCampainFoldersIds(){
 function updateDocTitle(){
   //var numChildren = DocumentApp.getActiveDocument().getBody().getNumChildren()
   //for(var i = 0; i < numChildren; i++){}
-  var range = DocumentApp.getActiveDocument().getBody().findText("Newsletter n°[0-9]* du [0-9]{1,2} .+ [0-9]{4}")
+  var range = DocumentApp.getActiveDocument().getBody().findText("Newsletter n°[0-9]* du [0-9]{1,2} .+ [0-9]{4}") // e.g. Newsletter n°22 du 21 septembre 2023
   var element = range.getElement().getParent()
   if(element.getHeading() != DocumentApp.ParagraphHeading.HEADING1)return
   //Logger.log(element.getText())
   //Logger.log(element.getType())
   element.clear()
   var date = new Date(documentProperties.getProperty('date'))
-  var num = documentProperties.getProperty('campaignNumber')
+  var num = getCampaignNumber()
   var dateOptions = {  year: 'numeric', month: 'long', day: 'numeric' }
   var newTitle = `Newsletter n°${num} du ${date.toLocaleDateString('fr-FR', dateOptions)}`
   element.appendText(newTitle)
@@ -172,46 +171,15 @@ function sendHtmlByEmail(){
 
 function emailHtml(html, images) {
   var attachments = [];
-  /*for (var j=0; j<images.length; j++) {
-    attachments.push( {
-      "fileName": images[j].name,
-      "mimeType": images[j].type,
-      "content": images[j].blob.getBytes() } );
-  }
-
-  var inlineImages = {};
-  for (var j=0; j<images.length; j++) {
-    inlineImages[[images[j].name]] = images[j].blob;
-  }*/
-
+ 
   var name = DocumentApp.getActiveDocument().getName()+".html";
   attachments.push({"fileName":name, "mimeType": "text/html", "content": html});
   MailApp.sendEmail({
      to: Session.getActiveUser().getEmail(),
      subject: name,
      htmlBody: html,
-     attachments: attachments/*,
-     inlineImages: inlineImages,
-     */
+     attachments: attachments
    });
 }
 
-
-// unuse ?
-function createDocumentForHtml(html, images) {
-  var name = DocumentApp.getActiveDocument().getName()+".html";
-  var newDoc = DocumentApp.create(name);
-  newDoc.getBody().setText(html);
-  for(var j=0; j < images.length; j++)
-    newDoc.getBody().appendImage(images[j].blob);
-  newDoc.saveAndClose();
-}
-
-// unuse ?
-function dumpAttributes(atts) {
-  // Log the paragraph attributes.
-  for (var att in atts) {
-    //Logger.log(att + ":" + atts[att]);
-  }
-}
 

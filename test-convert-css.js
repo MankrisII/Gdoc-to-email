@@ -6,7 +6,7 @@ var mediaQueries = `
     }
 }`
 
-var style =`
+var stylesStr =`
 body {
     background-color: #F7F7F7;
     margin: 0;
@@ -158,45 +158,51 @@ h1{
     padding-top: 30px;
     margin-top: 40px;
     font-size: 12px;
-}
+} 
 `;
 
-var styleArr
-
+var stylesObj
 function processStyles() {
-  
-  style = style.replaceAll(/\n\s*/g, "",)
-  style = style.replaceAll("\n", "",)
-  //console.log(style)
-  styleArr = [...style.matchAll(/([^\{]*)\{([^\}]*)\}/g)]
-  styleArr = styleArr.map(m => {
-    return o = {
-      definition: m[1].split(',')
-      //  .map(a => a.trim())
-      ,
-      styles : m[2]
+    stylesObj = {} 
+    // delete all EOL folowed by white spaces
+    stylesStr = stylesStr.replaceAll(/\n\s*/g, "",)
+    // delete all EOL
+    stylesStr = stylesStr.replaceAll("\n", "",)
+    //console.log(style)
+    //explode styles strings into an array
+    let styleArr = [...stylesStr.matchAll(/([^\{]*)\{([^\}]*)\}/g)]
+    
+    for (let i in styleArr) {
+        let names = styleArr[i][1].split(',')
+        for (let n in names) {
+            let name = normalizedStyleName(names[n])
+            stylesObj[name] = styleArr[i][2]
+        }
     }
-  })
-  console.log(styleArr)
+    console.log(stylesObj)
+   
 }
 
-
-function getStyles(definition) {
-  var styles = styleArr.filter(m => m.definition.match(definition))
-                      .map(m => m.styles)
-                      .join(";")
-  return `style="${styles}"`
+function normalizedStyleName(name) {
+    return name.trim().replaceAll(' ','_')
 }
 
+function getStyles(name) {
+    if (!stylesObj) {
+        processStyles()
+    }
+    let styles = ''
+    for (let n in arguments) {
+        styles += stylesObj[normalizedStyleName(arguments[n])]
+    }
+    return `style="${styles}"`
+}
 
-//console.log(styleArr.filter(m => m.definition.match("#content ol")).map(m => m.styles).join(";"))
-
-processStyles()
+//processStyles()
 function processeHTML(){
-  var html = `
-  <div ${getStyles("#content")}>
+  return `
+  <div ${getStyles('#header-left p','body')}>
   `
 }
-// processeHTML()
+//console.log(processeHTML())
 
-//console.log(html)

@@ -28,7 +28,7 @@ function menuCreateCampaign() {
  * @returns {string} new campaign id
  */
 
-function createCampaign(clearData, date) {
+function createCampaign(clearData = false, date ='2023-09-01') {
 
   if (clearData) { 
     clearButtons()
@@ -100,8 +100,9 @@ function menuDisplayCampaignName(){
  * @returns {string} the campaign's number 
  */
 function getCampaignNumber(){
-  let num = documentProperties.getProperty('campaignNumber')
+  let num = Number(documentProperties.getProperty('campaignNumber'))
   //Logger.log('campaignNumber = '+ num)
+  num = num ? num : 0
   return num
 }
 
@@ -117,12 +118,19 @@ function menuDisplayCampaignNumber(){
  * called by createCampaign()
  */
 function incrementCampaignNumber(){
-  let num = Number(documentProperties.getProperty('campaignNumber'))
+  let num = Number(getCampaignNumber())
   //Logger.log('campaign number = '+num)
   //Logger.log('campaign number typeof= '+typeof num)
   num++
-  setCampaignNumber(num++)
+  setCampaignNumber(num)
   //documentProperties.setProperty('campaignNumber',num.toString())
+}
+
+/**
+ * for debugging purpose
+ */
+function clearCampaignNumber() {
+  documentProperties.deleteProperty('campaignNumber')
 }
 
 /**
@@ -150,7 +158,7 @@ function menuPromptSetCampaignNumber(){
  * @returns 
  */
 
-function setCampaignNumber(number = 63) {
+function setCampaignNumber(number) {
   documentProperties.setProperty('campaignNumber', number)
   updateCampaignName()
   updateCampaignSubject()
@@ -203,6 +211,9 @@ function getCampaignConf(name = null){
   }else{
     //Logger.log("campaignConf doesn't exist")
     campaignConf = defaultCampaignConf;
+    campaignConf.sender.name = campainSenderName
+    campaignConf.sender.email = campainSenderEmail
+    campaignConf.toField = testCampaignToEmail
     //campaignConf.htmlContent = ConvertGoogleDocToCleanHtml()
     documentProperties.setProperty('campaignConf',JSON.stringify(campaignConf))
   }
@@ -226,6 +237,7 @@ function getBrevoRequestOptions(){
   var campaingConf = getCampaignConf()
   campaingConf.htmlContent = ConvertGoogleDocToCleanHtml()
   brevoRequestOptions.payload = JSON.stringify(campaingConf)
+  brevoRequestOptions.headers['api-key'] = brevoApiKey
   return brevoRequestOptions
 }
 
@@ -315,7 +327,7 @@ function displayCampaignDate(){
  * this fonction is called by setCampaignNumber() and 
  */
 function updateCampaignSubject(){
-  let subject = "Lettre d'information de Dieulefit n°"+documentProperties.getProperty('campaignNumber');
+  let subject = "Lettre d'information de Dieulefit n°"+getCampaignNumber();
   //Logger.log('subject = '+subject)
   updateCampaignConf({"subject" : subject})
 }
