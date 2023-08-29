@@ -169,20 +169,21 @@ function setCampaignNumber(number) {
 /**
  * request brevo to check campaing status
  */
-function menuCheckCampaignStatus(){
-  brevoRequestOptions.method = "GET";
-  // get the last sent campaign
-  let response = UrlFetchApp.fetch('https://api.brevo.com/v3/emailCampaigns/?type=classic&status=sent&limit=1',brevoRequestOptions);
+function menuCheckCampaignStatus() {
+  var options = getBrevoRequestOptions()
+  options.method = "GET";
+  options.muteHttpExceptions = true
+  options.payload = null
+  var capaignId = getCampaignId()
+  var url = `https://api.brevo.com/v3/emailCampaigns/${capaignId}`
+  
+  // get campaign report
+  let response = UrlFetchApp.fetch(url, brevoRequestOptions);
   //Logger.log('reponse serveur code : '+response.getResponseCode())
   //Logger.log('reponse serveur texte : '+response.getContentText())
-
-  let lastCampaignsSentId = JSON.parse(response.getContentText()).campaigns[0].id
-  //Logger.log('lastCampaignsSentId = '+lastCampaignsSentId)
   
-  if (lastCampaignsSentId.toString() == getCampaignId()) {
-    //Logger.log('la campagne actuelle a été envoyée. Veuillez créez une nouvelle campagne')
-    DocumentApp.getUi().alert("la campagne actuelle a été envoyée.\n Veuillez créez une nouvelle campagne")
-  }
+  let status = JSON.parse(response.getContentText()).status
+  DocumentApp.getUi().alert(status)
 }
 
 function updateCampaignConf(campaignConfToUpdate){
