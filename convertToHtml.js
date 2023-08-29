@@ -305,6 +305,28 @@ function ConvertGoogleDocToCleanHtml() {
   return html;
 }
 
+function processButton(item) {
+  return `<p class="center" ${getStyles('.center')}>
+            <a href="${item.getLinkUrl()}" class="bouton" ${getStyles('#content .bouton')}>${item.getText()}</a>
+          </p>`;
+}
+
+function processPositionedImages(item) {
+  if(typeof item.getPositionedImages != "undefined" && item.getPositionedImages().length >0){
+    //Logger.log(item.getText())
+    var image = item.getPositionedImages()[0];
+
+    var imageData = getPositionImage(image.getId());
+    //Logger.log(JSON.stringify(imageData))
+    return`<div class="flex-container" ${getStyles('.flex-container','#content .flex-container')}>
+                  <div class="flex-element flex-element-img" ${getStyles('.flex-element', '.flex-element-img')}>
+                    <img class="img250" src="${imageData.url}" ${getStyles('#content .img250')}>
+                  </div>
+                  <div class="flex-element flex-element-text" ${getStyles('.flex-element', '.flex-element-text')}>`
+    //Logger.log("url = "+imageData.url)
+  }
+}
+
 /**
  * Convert each Gdoc item to HTML
  * 
@@ -312,55 +334,18 @@ function ConvertGoogleDocToCleanHtml() {
  * @returns string
  */
 function processItem(item, listCounters) {
-  /*
-  Logger.log('item.getType() = '+item.getType())
-  if(item.hasOwnProperty("getText")){
-    Logger.log('item.getText() = '+item.getText())
-  }
-  */
-  
   var output = [];
   var prefix = "", suffix = "";
   
-  
-  //Logger.log('type = '+item.getType())
-  
+  // process button
+  if(isButton(item)) return processButton(item)
+    
   // process positioned images
-  var positionedImage = false
+  output.push(processPositionedImages(item))
   
-  if(typeof item.getPositionedImages != "undefined" && item.getPositionedImages().length >0){
-    positionedImage = true;
-    //Logger.log(item.getText())
-    var image = item.getPositionedImages()[0];
-    var docImages = getDocImages();
-    //Logger.log("image.getId() = "+image.getId())
-
-    var imageData = getPositionImage(image.getId());
-    //Logger.log(JSON.stringify(imageData))
-    output.push(`<div class="flex-container" ${getStyles('.flex-container','#content .flex-container')}>
-                  <div class="flex-element flex-element-img" ${getStyles('.flex-element', '.flex-element-img')}>
-                    <img class="img250" src="${imageData.url}" ${getStyles('#content .img250')}>
-                  </div>
-                  <div class="flex-element flex-element-text" ${getStyles('.flex-element', '.flex-element-text')}>`);
-    //Logger.log("url = "+imageData.url)
-  }
-
-  // process buttons
-  //Logger.log('item.hasOwnProperty(getLinkUrl) = '+item.hasOwnProperty('getLinkUrl'))
-  let itemIsButton = false;
-  if(item.hasOwnProperty('getLinkUrl') && item.getLinkUrl() && isButton(item.getLinkUrl())){
-    //Logger.log('linkUrl = '+item.getLinkUrl())
-    itemIsButton = true;
-    let itemType = item.getType().toString()
-    let itemText = item.getText()
-    let url = item.getLinkUrl()
-    return `<p class="center" ${getStyles('.center')}>
-              <a href="${item.getLinkUrl()}" class="bouton" ${getStyles('#content .bouton')}>${item.getText()}</a>
-            </p>`;
-  }
 
   // process paragraph elements
-  else if (item.getType() == DocumentApp.ElementType.PARAGRAPH) {
+  if (item.getType() == DocumentApp.ElementType.PARAGRAPH) {
     
     switch (item.getHeading()) {
        
@@ -455,8 +440,9 @@ function processItem(item, listCounters) {
     }
   }
 
-
   output.push(suffix);
+
+  // close tag for positioned image paragraph
   if(item.getType() == DocumentApp.ElementType.HORIZONTAL_RULE){
     output.push(`</div>
                 </div>`)

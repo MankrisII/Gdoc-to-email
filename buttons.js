@@ -31,12 +31,17 @@ function getButtons() {
 
 /**
  * 
- * @param {string} url 
+ * @param {Item} item 
  * @returns {boolean}
  */
-function isButton(url){
-  let buttons = getButtons();
-  return buttons.includes(url)
+function isButton(item) {
+  if (item.hasOwnProperty('getLinkUrl') && item.getLinkUrl()) {
+    let url = item.getLinkUrl()
+    let buttons = getButtons();
+    return buttons.includes(url)
+  } else {
+    return false
+  }
 }
 
 /**
