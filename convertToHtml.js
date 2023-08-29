@@ -161,6 +161,16 @@ h1{
     margin-top: 40px;
     font-size: 12px;
 }
+.highlightedBlock{
+  background-color : #ffd900;
+  padding-top: 25px;
+  padding-right: 25px;
+  padding-bottom: 15px;
+  padding-left: 25px;
+  text-align: center;
+  margin-bottom: 25px;
+  margin-top: 25px;
+}
 `;
 
 var stylesObj
@@ -316,6 +326,7 @@ function processButton(item) {
           </p>`;
 }
 
+var positionedImage = false
 /**
  * if Paragraph has positioned image, return html tag for the positioned image
  * @param {Paragraph} item 
@@ -324,6 +335,7 @@ function processButton(item) {
 function processPositionedImages(item) {
   if(typeof item.getPositionedImages != "undefined" && item.getPositionedImages().length >0){
     //Logger.log(item.getText())
+    positionedImage = true
     var image = item.getPositionedImages()[0];
 
     var imageData = getPositionImage(image.getId());
@@ -438,6 +450,17 @@ function processList(item,listCounters) {
   listCounters[key] = counter;
   return [prefix, suffix]
 }
+
+var highlightedBlock = false
+function processHighlightedBlock() {
+  if (!highlightedBlock) {
+    highlightedBlock = true
+    return `<div class="highlightedBlock" ${getStyles('.highlightedBlock')}>`
+  } else {
+    highlightedBlock = false
+  }return `</div>`
+}
+
 /**
  * Convert each Gdoc item to HTML
  * 
@@ -457,15 +480,23 @@ function processItem(item, listCounters) {
   // process positioned images
   output.push(processPositionedImages(item))
 
-  // closing tags for positioned image on paragraph
-  if(item.getType() == DocumentApp.ElementType.HORIZONTAL_RULE){
-    return `</div></div>`
+  
+  if (item.getType() == DocumentApp.ElementType.HORIZONTAL_RULE) {
+    // closing tags for positioned image on paragraph
+    if (positionedImage) {
+      positionedImage = false
+      return `</div></div>`
+    }
+    
+    return processHighlightedBlock()  
   }
   
   // process paragraph elements
   if (item.getType() == DocumentApp.ElementType.PARAGRAPH) {
     if (item.getNumChildren() == 0) return "";
-    [prefix, suffix] = processHeading(item)
+    if (item.getChild(0).getType() != DocumentApp.ElementType.HORIZONTAL_RULE) {
+        [prefix, suffix] = processHeading(item)
+    }
   }
   
   // process List elements
