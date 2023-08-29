@@ -72,8 +72,6 @@ var defaultCampaignConf = {
       "toField": '', //testCampaignToEmail
     };
 
-// to store, during converting to html, if the processed item is the first heading3 after a heading2
-var firstH3 = false;
 
 // initialisation
 function onOpen() {

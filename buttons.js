@@ -35,7 +35,7 @@ function getButtons() {
  * @returns {boolean}
  */
 function isButton(item) {
-  if (item.hasOwnProperty('getLinkUrl') && item.getLinkUrl()) {
+  if (item.getLinkUrl && item.getLinkUrl()) {
     let url = item.getLinkUrl()
     let buttons = getButtons();
     return buttons.includes(url)

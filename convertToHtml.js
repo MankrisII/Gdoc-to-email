@@ -305,12 +305,22 @@ function ConvertGoogleDocToCleanHtml() {
   return html;
 }
 
+/**
+ * return html for styled button
+ * @param {Paragraph} item 
+ * @returns 
+ */
 function processButton(item) {
   return `<p class="center" ${getStyles('.center')}>
             <a href="${item.getLinkUrl()}" class="bouton" ${getStyles('#content .bouton')}>${item.getText()}</a>
           </p>`;
 }
 
+/**
+ * if Paragraph has positioned image, return html tag for the positioned image
+ * @param {Paragraph} item 
+ * @returns 
+ */
 function processPositionedImages(item) {
   if(typeof item.getPositionedImages != "undefined" && item.getPositionedImages().length >0){
     //Logger.log(item.getText())
@@ -327,60 +337,68 @@ function processPositionedImages(item) {
   }
 }
 
+function isInlinImage(item) {
+  return (item.getType() == DocumentApp.ElementType.INLINE_IMAGE)
+}
+
 /**
- * Convert each Gdoc item to HTML
- * 
- * @param {*} item 
- * @returns string
+ * return html for inline Image
+ * @param {InlineImage} item 
+ * @returns 
  */
-function processItem(item, listCounters) {
-  var output = [];
-  var prefix = "", suffix = "";
+function processInlineImage(item) {
+  return `<div class="img600"><img ${getStyles('#content .img600 img')} src="${item.getAltDescription()}"/></div>`
+}
+
+// if the processed item is the first heading3 after a heading2
+var firstH3 = false;
+/**
+ * return html opening and closing tags based on element heading style
+ * @param {Paragraph} item 
+ * @returns 
+ */
+function processHeading(item) {
+  let prefix = ''
+  let suffix = ''
+      
+  switch (item.getHeading()) {
+    case DocumentApp.ParagraphHeading.HEADING6: 
+      prefix = "<h6>", suffix = "</h6>"; break;
+    case DocumentApp.ParagraphHeading.HEADING5: 
+      prefix = "<h5>", suffix = "</h5>"; break;
+    case DocumentApp.ParagraphHeading.HEADING4:
+      prefix = "<h4>", suffix = "</h4>"; break;
+    case DocumentApp.ParagraphHeading.HEADING3:
+      if(firstH3){
+        prefix = `<h3 class="firstH3" ${getStyles('#content h3','#content h3.firstH3')}>`;
+        firstH3 = false;
+      }else{
+        prefix = `<h3 ${getStyles('#content h3')}>`;
+      }
+      suffix = "</h3>"; 
+      break;
+    case DocumentApp.ParagraphHeading.HEADING2:
+      prefix = `<h2 ${getStyles('#content h2')}>`, suffix = "</h2>"; 
+      firstH3 = true;
+      break;
+    case DocumentApp.ParagraphHeading.HEADING1:
+      prefix = `<h1 ${getStyles('h1')}>`, suffix = "</h1>"; break;
+    default: 
+      prefix = `<p ${getStyles('#content p')}>`, suffix = "</p>";
+  }
   
-  // process button
-  if(isButton(item)) return processButton(item)
-    
-  // process positioned images
-  output.push(processPositionedImages(item))
-  
+  return [prefix, suffix]
+}
 
-  // process paragraph elements
-  if (item.getType() == DocumentApp.ElementType.PARAGRAPH) {
-    
-    switch (item.getHeading()) {
-       
-      case DocumentApp.ParagraphHeading.HEADING6: 
-        prefix = "<h6>", suffix = "</h6>"; break;
-      case DocumentApp.ParagraphHeading.HEADING5: 
-        prefix = "<h5>", suffix = "</h5>"; break;
-      case DocumentApp.ParagraphHeading.HEADING4:
-        prefix = "<h4>", suffix = "</h4>"; break;
-      case DocumentApp.ParagraphHeading.HEADING3:
-        if(firstH3){
-          prefix = `<h3 class="firstH3" ${getStyles('#content h3','#content h3.firstH3')}>`;
-          firstH3 = false;
-        }else{
-          prefix = `<h3 ${getStyles('#content h3')}>`;
-        }
-        suffix = "</h3>"; 
-        break;
-      case DocumentApp.ParagraphHeading.HEADING2:
-        prefix = `<h2 ${getStyles('#content h2')}>`, suffix = "</h2>"; 
-        firstH3 = true;
-        break;
-      case DocumentApp.ParagraphHeading.HEADING1:
-        prefix = `<h1 ${getStyles('h1')}>`, suffix = "</h1>"; break;
-      default: 
-        prefix = `<p ${getStyles('#content p')}>`, suffix = "</p>";
-    }
-
-    if (item.getNumChildren() == 0) return "";
-
-  }else if (item.getType() == DocumentApp.ElementType.INLINE_IMAGE){
-    output.push(`<div class="img600"><img ${getStyles('#content .img600 img')} src="${item.getAltDescription()}"/></div>`)
-    //processImage(item, images, output);
-  }else if (item.getType() === DocumentApp.ElementType.LIST_ITEM) {
-    var listItem = item;
+/**
+ * return html opening and closing tags of a list item element
+ * @param {ListItem} item 
+ * @returns 
+ */
+function processList(item,listCounters) {
+  let prefix = '';
+  let suffix = '';
+  var listItem = item;
     var gt = listItem.getGlyphType();
     var key = listItem.getListId() + '.' + listItem.getNestingLevel();
     var counter = listCounters[key] || 0;
@@ -416,42 +434,71 @@ function processItem(item, listCounters) {
 
     }
 
-    counter++;
-    listCounters[key] = counter;
+  counter++;
+  listCounters[key] = counter;
+  return [prefix, suffix]
+}
+/**
+ * Convert each Gdoc item to HTML
+ * 
+ * @param {*} item 
+ * @returns string
+ */
+function processItem(item, listCounters) {
+  var output = [];
+  var prefix = "", suffix = "";
+  
+  // process buttons
+  if (isButton(item)) return processButton(item)
+  
+  // process inline images
+  if (isInlinImage(item)) return processInlineImage(item)
+  
+  // process positioned images
+  output.push(processPositionedImages(item))
+
+  // closing tags for positioned image on paragraph
+  if(item.getType() == DocumentApp.ElementType.HORIZONTAL_RULE){
+    return `</div></div>`
+  }
+  
+  // process paragraph elements
+  if (item.getType() == DocumentApp.ElementType.PARAGRAPH) {
+    if (item.getNumChildren() == 0) return "";
+    [prefix, suffix] = processHeading(item)
+  }
+  
+  // process List elements
+  if (item.getType() === DocumentApp.ElementType.LIST_ITEM) {
+    [prefix, suffix] = processList(item,listCounters)
   }
 
   output.push(prefix);
 
-  
-
-  // Process Texts éléments
+  // Process Texts elements
   if (item.getType() == DocumentApp.ElementType.TEXT) {
-    processText(item, output);
+    output.push(processText(item));
   }
-  else {
-    if (item.getNumChildren) {
-      var numChildren = item.getNumChildren();
 
-      // Walk through all the child elements of the doc.
-      for (var i = 0; i < numChildren; i++) {
-        var child = item.getChild(i);
-        output.push(processItem(child, listCounters));
-      }
+  // process children elements
+  if (item.getNumChildren) {
+    var numChildren = item.getNumChildren();
+
+    // Walk through all the child elements of the current item.
+    for (var i = 0; i < numChildren; i++) {
+      var child = item.getChild(i);
+      output.push(processItem(child, listCounters));
     }
   }
 
   output.push(suffix);
 
-  // close tag for positioned image paragraph
-  if(item.getType() == DocumentApp.ElementType.HORIZONTAL_RULE){
-    output.push(`</div>
-                </div>`)
-  }
   return output.join('');
 }
 
 
-function processText(item, output) {
+function processText(item) {
+  let output = []
   var text = item.getText();
   if(text == "ici"){
     var stop = true;
@@ -539,9 +586,10 @@ function processText(item, output) {
 
     }
   }
+  return output.join('')
 }
 
-
+/*
 function processImage(item, images, output)
 {
   images = images || [];
@@ -567,5 +615,5 @@ function processImage(item, images, output)
     "blob": blob,
     "type": contentType,
     "name": name});
-}
+}*/
 
