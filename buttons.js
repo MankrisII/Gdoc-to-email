@@ -44,6 +44,14 @@ function isButton(item) {
   }
 }
 
+function isDefaultButton(item) {
+  if (isButton(item) && defaltButtonsUrls.includes(item.getLinkUrl())) {
+    return true
+  } else {
+    return false
+  }
+}
+
 /**
  *
  * clear document property 'buttons'

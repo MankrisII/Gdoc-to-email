@@ -139,6 +139,9 @@ function clearGoogleDoc(){
         //Logger.log('fin')  
         break;
       }
+      if (isDefaultButton(child)) {
+        break;
+      }
       childsToRemoveIds.push(i)
       //child.removeFromParent();
       //Logger.log('remove child ')

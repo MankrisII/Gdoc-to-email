@@ -30,7 +30,10 @@ const brevoApiKey ;
 
 
 // list of default buttons url. Buttons that remains over campaigns
-const defaltButtonsUrls = ["https://www.dieulefit-tourisme.com/votre-sejour/agenda/tout-lagenda/"];
+const defaltButtonsUrls = [
+  "https://www.dieulefit-tourisme.com/votre-sejour/agenda/tout-lagenda/",
+  "https://www.ccdb26.fr/actualites/"
+];
 // url of public storage for images displayed in html's campaigns
 const onlineImageFolder = 'https://mairie-dieulefit.fr/images/stories/contributeurs/actualites/a_la_une/2023/';
 // GDocs folder and files
