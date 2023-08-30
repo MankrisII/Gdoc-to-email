@@ -219,13 +219,24 @@ function normalizedStyleName(name) {
 }
 
 /**
- * return the style corresponding to the definition name
+ * return the styles corresponding to the definition name embeded in html style prop
  * can get multiple string arguments
  * 
- * @param {string} name 
+ * @param {string[]} name 
  * @returns string
  */
 function getStyles() {
+  return `style="${getRawStyles(...arguments)}"`
+}
+
+/**
+ * return the styles corresponding to the definition name 
+ * can get multiple string arguments
+ * 
+ * @param {string[]} name 
+ * @returns string
+ */
+function getRawStyles() {
   if (!stylesObj) {
     processStyles()
   }
@@ -234,7 +245,7 @@ function getStyles() {
   for (let n in arguments) {
       styles += stylesObj[normalizedStyleName(arguments[n])]
   }
-  return `style="${styles}"`
+  return styles
 }
 
 /**
@@ -396,7 +407,13 @@ function processHeading(item) {
     case DocumentApp.ParagraphHeading.HEADING1:
       prefix = `<h1 ${getStyles('h1')}>`, suffix = "</h1>"; break;
     default: 
-      prefix = `<p ${getStyles('#content p')}>`, suffix = "</p>";
+      var alignment = item.getAlignment()
+      if(alignment){
+        alignment = alignment.toString().toLowerCase()
+      }
+      var styles = getRawStyles('#content p')
+      styles = alignment ? styles+'align:'+alignment+';' : styles
+      prefix = `<p style="${styles}">`, suffix = "</p>";
   }
   
   return [prefix, suffix]
@@ -541,6 +558,7 @@ function processText(item) {
 
   if (indices.length <= 1) {
     color = item.getForegroundColor()
+    
     if (color) {
       output.push(`<span style="color:${color};">${text}</span>`)
     }
