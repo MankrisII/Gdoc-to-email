@@ -97,7 +97,9 @@ function onOpen() {
     .addItem('Envoyer un test avec Brevo', 'menuSendTestWithBrevo')
     .addItem('Envoyer le HTML par mail','sendHtmlByEmail')
     .addItem('Archiver la newsletter', 'archiver')
+    .addSeparator()
     .addItem('Envoyer le mail à la plénière', 'sendMailToPleniere')
+    .addItem('Envoyer le mail en correction', 'sendForCorrection')
     .addSeparator()
     .addItem('Inserer un bouton', 'menuAddButton')
     .addItem('Inserer une image en ligne', 'menuAddinlineImage')
@@ -127,6 +129,27 @@ Logger.log(content)
   MailApp.sendEmail({
      //to: Session.getActiveUser().getEmail(),
      to : contributorsEmailsList,
+     subject: `Prochaine newsletter du ${campaignSendingDate.toLocaleDateString('fr-FR', dateOptions)}`,
+     body: content,
+   });
+}
+
+// send an email to corretors to correct spelling
+function sendForCorrection(){
+  var campaignSendingDate = new Date(documentProperties.getProperty('date'))
+  var deadLineToContribute = new Date(campaignSendingDate.getTime() - 87000000)
+  var dateOptions = {  year: 'numeric', month: 'long', day: 'numeric' }
+  
+  var content = `Bonjour,
+
+Voici le fichier de la newsletter pour relecture :
+${DocumentApp.getActiveDocument().getUrl()}
+
+Merci,`;
+Logger.log(content)
+  MailApp.sendEmail({
+     //to: Session.getActiveUser().getEmail(),
+     to : corretorsEmailsList,
      subject: `Prochaine newsletter du ${campaignSendingDate.toLocaleDateString('fr-FR', dateOptions)}`,
      body: content,
    });
