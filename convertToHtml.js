@@ -531,6 +531,7 @@ function processItem(item, listCounters) {
 function processText(item) {
   let output = []
   var text = item.getText();
+  let color;
   if(text == "ici"){
     var stop = true;
   }
@@ -539,8 +540,12 @@ function processText(item) {
 
 
   if (indices.length <= 1) {
+    color = item.getForegroundColor()
+    if (color) {
+      output.push(`<span style="color:${color};">${text}</span>`)
+    }
     // Assuming that a whole para fully italic is a quote
-    if(item.isBold()) {
+    else if(item.isBold()) {
       output.push('<strong>' + text + '</strong>');
     }
     /*else if(item.isItalic()) {
@@ -565,7 +570,7 @@ function processText(item) {
       var endPos = i+1 < indices.length ? indices[i+1]: text.length;
       var partText = text.substring(startPos, endPos);
       var linkUrl = item.getLinkUrl(startPos) ? item.getLinkUrl(startPos) : null
-      let color = partAtts.FOREGROUND_COLOR
+      color = partAtts.FOREGROUND_COLOR
       partText = partText.replace("\r","<br>")
       //Logger.log("partText = "+partText)
       //Logger.log("partText2 = "+partText2)
