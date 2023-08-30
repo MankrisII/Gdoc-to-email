@@ -565,12 +565,14 @@ function processText(item) {
       var endPos = i+1 < indices.length ? indices[i+1]: text.length;
       var partText = text.substring(startPos, endPos);
       var linkUrl = item.getLinkUrl(startPos) ? item.getLinkUrl(startPos) : null
-
+      let color = partAtts.FOREGROUND_COLOR
       partText = partText.replace("\r","<br>")
       //Logger.log("partText = "+partText)
       //Logger.log("partText2 = "+partText2)
 
-
+      if (color) {
+        output.push(`<span style="color:${color};">`)
+      }
       if (partAtts.ITALIC) {
         output.push('<i>');
       }
@@ -601,6 +603,9 @@ function processText(item) {
       }
       
 
+      if (color) {
+        output.push(`</span>`)
+      }
       if (partAtts.ITALIC) {
         output.push('</i>');
       }
