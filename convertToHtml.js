@@ -549,6 +549,10 @@ function processText(item) {
   let output = []
   var text = item.getText();
   let color;
+
+  /*
+  TODO vérifier l'utilité de la consition suivante.
+  */
   if(text == "ici"){
     var stop = true;
   }
@@ -558,12 +562,12 @@ function processText(item) {
 
   if (indices.length <= 1) {
     color = item.getForegroundColor()
+    /*
+    TODO modifier l'intégration de la couleur pour encadrer la balise strong
+    */
     
-    if (color) {
-      output.push(`<span style="color:${color};">${text}</span>`)
-    }
     // Assuming that a whole para fully italic is a quote
-    else if(item.isBold()) {
+    if(item.isBold()) {
       output.push('<strong>' + text + '</strong>');
     }
     /*else if(item.isItalic()) {
@@ -578,6 +582,11 @@ function processText(item) {
     else {
       output.push(text);
     }
+    if (color) {
+      output.unshift(`<span style="color:${color};">`)
+      output.push(`</span>`)
+    }
+    
   }
   else {
     //Logger.log("type = "+item.getType());

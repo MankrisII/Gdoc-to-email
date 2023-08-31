@@ -6,9 +6,7 @@ function archiver() {
   clearGoogleDoc()
 
   return;
-  /*TODO*/
-
-  // Create new campain ?
+  // TODO - Create new campain ?
   var response = DocumentApp.getUi().alert('Voulez vous créer une nouvelle campagne ?', DocumentApp.getUi().ButtonSet.YES_NO);
   if (response == DocumentApp.getUi().Button.YES) {
     menuCreateCampaign()

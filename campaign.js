@@ -73,8 +73,7 @@ function updateCampaign(){
   //Logger.log('reponse serveur : '+response.getResponseCode())
 
   /*
-  TODO
-  request error handler
+  TODO - request error handler
   */
   
 }
