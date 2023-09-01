@@ -547,7 +547,6 @@ function processItem(item, listCounters) {
 
 function processText(item) {
   var text = item.getText();
-  let color;
   let processed = '';
   var indices = item.getTextAttributeIndices();
 
