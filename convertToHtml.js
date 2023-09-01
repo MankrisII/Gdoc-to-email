@@ -167,7 +167,6 @@ h1{
   padding-right: 25px;
   padding-bottom: 15px;
   padding-left: 25px;
-  text-align: center;
   margin-bottom: 25px;
   margin-top: 25px;
 }
@@ -546,6 +545,7 @@ function processItem(item, listCounters) {
 
 
 function processText(item) {
+  let output = []
   var text = item.getText();
   let processed = '';
   var indices = item.getTextAttributeIndices();
@@ -559,6 +559,8 @@ function processText(item) {
     processed = formatItalic(processed, item.isItalic())
     processed = formatUnderline(processed, item.isUnderline())
     processed = formatColor(processed, item.getForegroundColor())
+
+    output.push(processed)
   }
   else {
     //Logger.log("type = "+item.getType());
@@ -585,9 +587,11 @@ function processText(item) {
       processed = formatItalic(processed, partAtts.ITALIC)
       processed = formatUnderline(processed, partAtts.UNDERLINE)
       processed = formatColor(processed, partAtts.FOREGROUND_COLOR)
+
+      output.push(processed)
     }
   }
-  return processed
+  return output.join('')
 }
 
 function formatTextUrl(text) {
