@@ -558,22 +558,27 @@ function processText(item) {
   if (indices.length <= 1) {
     processed = text
     
-    if (processed.trim().match(/^https?:\/\//)) {
-      processed = `<a href="${processed}" rel="nofollow">${processed}</a>`;
-    }
+    // if (processed.trim().match(/^https?:\/\//)) {
+    //   processed = `<a href="${processed}" rel="nofollow">${processed}</a>`;
+    // }
 
-    if(item.isBold()) {
-      processed = `<strong>${processed}</strong>`;
-    }
+    // if(item.isBold()) {
+    //   processed = `<strong>${processed}</strong>`;
+    // }
     
-    if (item.isItalic()) {
-      processed = `<i>${processed}</i>`;
-    }
+    // if (item.isItalic()) {
+    //   processed = `<i>${processed}</i>`;
+    // }
 
-    color = item.getForegroundColor()
-    if (color) {
-      processed = `<span style="color:${color};">${processed}</span>`
-    }
+    // color = item.getForegroundColor()
+    // if (color) {
+    //   processed = `<span style="color:${color};">${processed}</span>`
+    // }
+
+    processed = formatLink(processed)
+    processed = formatBold(processed, item.isBold())
+    processed = formatItalic(processed, item.isItalic())
+    processed = formatColor(processed, item.getForegroundColor())
 
     output.push(processed)
   }
@@ -587,7 +592,7 @@ function processText(item) {
       var partText = text.substring(startPos, endPos);
       var linkUrl = item.getLinkUrl(startPos) ? item.getLinkUrl(startPos) : null
       color = partAtts.FOREGROUND_COLOR
-      partText = partText.replace("\r","<br>")
+      partText = partText.replace("\r","<br>")      
       //Logger.log("partText = "+partText)
       //Logger.log("partText2 = "+partText2)
 
@@ -639,11 +644,30 @@ function processText(item) {
 
       if (partText.indexOf('\r')){
         //output.push('</br>');
-      }
+      }      
 
     }
   }
   return output.join('')
+}
+
+function formatLink(text) {
+  if (text.trim().match(/^https?:\/\//)) {
+    return `<a href="${text}" rel="nofollow">${text}</a>`;
+  }
+  return text
+}
+
+function formatBold(text, isBold) {
+    return isBold ? `<strong>${text}</strong>` : text
+}
+
+function formatItalic(text, isItalic){
+    return isItalic ? `<i>${text}</i>` : text
+}
+
+function formatColor(text, color) {
+  return color ? `<span style="color:${color};">${text}</span>` : text
 }
 
 /*
