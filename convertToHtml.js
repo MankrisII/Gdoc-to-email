@@ -549,35 +549,33 @@ function processText(item) {
   let output = []
   var text = item.getText();
   let color;
+  let processed = '';
 
   //text = text.replace("\r","</br>")
   var indices = item.getTextAttributeIndices();
 
 
   if (indices.length <= 1) {
-    color = item.getForegroundColor()
-        
-    // Assuming that a whole para fully italic is a quote
+    processed = text
+    
+    if (processed.trim().match(/^https?:\/\//)) {
+      processed = `<a href="${processed}" rel="nofollow">${processed}</a>`;
+    }
+
     if(item.isBold()) {
-      output.push('<strong>' + text + '</strong>');
-    }
-    /*else if(item.isItalic()) {
-      output.push('<blockquote>' + text + '</blockquote>');
-    }*/
-    else if (text.trim().indexOf('http://') == 0) {
-      output.push('<a href="' + text + '" rel="nofollow">' + text + '</a>');
-    }
-    else if (text.trim().indexOf('https://') == 0) {
-      output.push('<a href="' + text + '" rel="nofollow">' + text + '</a>');
-    }
-    else {
-      output.push(text);
-    }
-    if (color) {
-      output.unshift(`<span style="color:${color};">`)
-      output.push(`</span>`)
+      processed = `<strong>${processed}</strong>`;
     }
     
+    if (item.isItalic()) {
+      processed = `<i>${processed}</i>`;
+    }
+
+    color = item.getForegroundColor()
+    if (color) {
+      processed = `<span style="color:${color};">${processed}</span>`
+    }
+
+    output.push(processed)
   }
   else {
     //Logger.log("type = "+item.getType());
