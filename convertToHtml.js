@@ -575,9 +575,11 @@ function processText(item) {
     //   processed = `<span style="color:${color};">${processed}</span>`
     // }
 
-    processed = formatLink(processed)
+    processed = formatTextUrl(processed)
+    processed = formatLinkUrl(processed, item.getLinkUrl())
     processed = formatBold(processed, item.isBold())
     processed = formatItalic(processed, item.isItalic())
+    processed = formatUnderline(processed, item.isUnderline())
     processed = formatColor(processed, item.getForegroundColor())
 
     output.push(processed)
@@ -596,64 +598,80 @@ function processText(item) {
       //Logger.log("partText = "+partText)
       //Logger.log("partText2 = "+partText2)
 
-      if (color) {
-        output.push(`<span style="color:${color};">`)
-      }
-      if (partAtts.ITALIC) {
-        output.push('<i>');
-      }
-      if (partAtts.BOLD) {
-        output.push('<strong>');
-      }
-      if (partAtts.UNDERLINE) {
-        output.push('<u>');
-      }
+      // if (color) {
+      //   output.push(`<span style="color:${color};">`)
+      // }
+      // if (partAtts.ITALIC) {
+      //   output.push('<i>');
+      // }
+      // if (partAtts.BOLD) {
+      //   output.push('<strong>');
+      // }
+      // if (partAtts.UNDERLINE) {
+      //   output.push('<u>');
+      // }
 
-      // If someone has written [xxx] and made this whole text some special font, like superscript
-      // then treat it as a reference and make it superscript.
-      // Unfortunately in Google Docs, there's no way to detect superscript
-      if (partText.indexOf('[')==0 && partText[partText.length-1] == ']') {
-        output.push('<sup>' + partText + '</sup>');
-      }
-      else if (partText.trim().indexOf('http://') == 0) {
-        output.push('<a href="' + partText + '" rel="nofollow">' + partText + '</a>');
-      }
-      else if (partText.trim().indexOf('https://') == 0) {
-        output.push('<a href="' + partText + '" rel="nofollow">' + partText + '</a>');
-      }
-      else if(linkUrl){
-        output.push('<a href="' + linkUrl + '" rel="nofollow">' + partText + '</a>');
-      }
-      else {
-        output.push(partText);
-      }
+      // // If someone has written [xxx] and made this whole text some special font, like superscript
+      // // then treat it as a reference and make it superscript.
+      // // Unfortunately in Google Docs, there's no way to detect superscript
+      // if (partText.indexOf('[')==0 && partText[partText.length-1] == ']') {
+      //   output.push('<sup>' + partText + '</sup>');
+      // }
+      // else if (partText.trim().indexOf('http://') == 0) {
+      //   output.push('<a href="' + partText + '" rel="nofollow">' + partText + '</a>');
+      // }
+      // else if (partText.trim().indexOf('https://') == 0) {
+      //   output.push('<a href="' + partText + '" rel="nofollow">' + partText + '</a>');
+      // }
+      // else if(linkUrl){
+      //   output.push('<a href="' + linkUrl + '" rel="nofollow">' + partText + '</a>');
+      // }
+      // else {
+      //   output.push(partText);
+      // }
       
 
-      if (color) {
-        output.push(`</span>`)
-      }
-      if (partAtts.ITALIC) {
-        output.push('</i>');
-      }
-      if (partAtts.BOLD) {
-        output.push('</strong>');
-      }
-      if (partAtts.UNDERLINE) {
-        output.push('</u>');
-      }
+      // if (color) {
+      //   output.push(`</span>`)
+      // }
+      // if (partAtts.ITALIC) {
+      //   output.push('</i>');
+      // }
+      // if (partAtts.BOLD) {
+      //   output.push('</strong>');
+      // }
+      // if (partAtts.UNDERLINE) {
+      //   output.push('</u>');
+      // }
 
-      if (partText.indexOf('\r')){
-        //output.push('</br>');
-      }      
+      // if (partText.indexOf('\r')){
+      //   //output.push('</br>');
+      // }
 
+      processed = partText
+      processed = formatTextUrl(processed)
+      processed = formatTextUrl(processed, item.getLinkUrl(startPos))
+      processed = formatBold(processed, partAtts.BOLD)
+      processed = formatItalic(processed, partAtts.ITALIC)
+      processed = formatUnderline(processed, partAtts.UNDERLINE)
+      processed = formatColor(processed, partAtts.FOREGROUND_COLOR)
+
+      output.push(processed)
     }
   }
   return output.join('')
 }
 
-function formatLink(text) {
+function formatTextUrl(text) {
   if (text.trim().match(/^https?:\/\//)) {
     return `<a href="${text}" rel="nofollow">${text}</a>`;
+  }
+  return text
+}
+
+function formatLinkUrl(text, url) {
+  if (url) {
+    return `<a href="${url}" rel="nofollow">${text}</a>`;
   }
   return text
 }
@@ -664,6 +682,9 @@ function formatBold(text, isBold) {
 
 function formatItalic(text, isItalic){
     return isItalic ? `<i>${text}</i>` : text
+}
+function formatUnderline(text, isUnderline){
+    return isUnderline ? `<u>${text}</u>` : text
 }
 
 function formatColor(text, color) {
