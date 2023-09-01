@@ -546,7 +546,6 @@ function processItem(item, listCounters) {
 
 
 function processText(item) {
-  let output = []
   var text = item.getText();
   let color;
   let processed = '';
@@ -561,8 +560,6 @@ function processText(item) {
     processed = formatItalic(processed, item.isItalic())
     processed = formatUnderline(processed, item.isUnderline())
     processed = formatColor(processed, item.getForegroundColor())
-
-    output.push(processed)
   }
   else {
     //Logger.log("type = "+item.getType());
@@ -589,11 +586,9 @@ function processText(item) {
       processed = formatItalic(processed, partAtts.ITALIC)
       processed = formatUnderline(processed, partAtts.UNDERLINE)
       processed = formatColor(processed, partAtts.FOREGROUND_COLOR)
-
-      output.push(processed)
     }
   }
-  return output.join('')
+  return processed
 }
 
 function formatTextUrl(text) {
