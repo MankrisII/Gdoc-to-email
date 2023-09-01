@@ -550,12 +550,6 @@ function processText(item) {
   var text = item.getText();
   let color;
 
-  /*
-  TODO vérifier l'utilité de la consition suivante.
-  */
-  if(text == "ici"){
-    var stop = true;
-  }
   //text = text.replace("\r","</br>")
   var indices = item.getTextAttributeIndices();
 
