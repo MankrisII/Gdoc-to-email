@@ -412,7 +412,7 @@ function processHeading(item) {
         alignment = alignment.toString().toLowerCase()
       }
       var styles = getRawStyles('#content p')
-      styles = alignment ? styles+'align:'+alignment+';' : styles
+      styles = alignment ? styles+'text-align:'+alignment+';' : styles
       prefix = `<p style="${styles}">`, suffix = "</p>";
   }
   
