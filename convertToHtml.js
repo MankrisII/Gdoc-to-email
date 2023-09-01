@@ -556,10 +556,7 @@ function processText(item) {
 
   if (indices.length <= 1) {
     color = item.getForegroundColor()
-    /*
-    TODO modifier l'intégration de la couleur pour encadrer la balise strong
-    */
-    
+        
     // Assuming that a whole para fully italic is a quote
     if(item.isBold()) {
       output.push('<strong>' + text + '</strong>');
