@@ -550,30 +550,10 @@ function processText(item) {
   var text = item.getText();
   let color;
   let processed = '';
-
-  //text = text.replace("\r","</br>")
   var indices = item.getTextAttributeIndices();
-
 
   if (indices.length <= 1) {
     processed = text
-    
-    // if (processed.trim().match(/^https?:\/\//)) {
-    //   processed = `<a href="${processed}" rel="nofollow">${processed}</a>`;
-    // }
-
-    // if(item.isBold()) {
-    //   processed = `<strong>${processed}</strong>`;
-    // }
-    
-    // if (item.isItalic()) {
-    //   processed = `<i>${processed}</i>`;
-    // }
-
-    // color = item.getForegroundColor()
-    // if (color) {
-    //   processed = `<span style="color:${color};">${processed}</span>`
-    // }
 
     processed = formatTextUrl(processed)
     processed = formatLinkUrl(processed, item.getLinkUrl())
@@ -592,62 +572,16 @@ function processText(item) {
       var startPos = indices[i];
       var endPos = i+1 < indices.length ? indices[i+1]: text.length;
       var partText = text.substring(startPos, endPos);
-      var linkUrl = item.getLinkUrl(startPos) ? item.getLinkUrl(startPos) : null
-      color = partAtts.FOREGROUND_COLOR
       partText = partText.replace("\r","<br>")      
-      //Logger.log("partText = "+partText)
-      //Logger.log("partText2 = "+partText2)
-
-      // if (color) {
-      //   output.push(`<span style="color:${color};">`)
-      // }
-      // if (partAtts.ITALIC) {
-      //   output.push('<i>');
-      // }
-      // if (partAtts.BOLD) {
-      //   output.push('<strong>');
-      // }
-      // if (partAtts.UNDERLINE) {
-      //   output.push('<u>');
-      // }
-
+     
+      // TODO - superscript
       // // If someone has written [xxx] and made this whole text some special font, like superscript
       // // then treat it as a reference and make it superscript.
       // // Unfortunately in Google Docs, there's no way to detect superscript
       // if (partText.indexOf('[')==0 && partText[partText.length-1] == ']') {
       //   output.push('<sup>' + partText + '</sup>');
       // }
-      // else if (partText.trim().indexOf('http://') == 0) {
-      //   output.push('<a href="' + partText + '" rel="nofollow">' + partText + '</a>');
-      // }
-      // else if (partText.trim().indexOf('https://') == 0) {
-      //   output.push('<a href="' + partText + '" rel="nofollow">' + partText + '</a>');
-      // }
-      // else if(linkUrl){
-      //   output.push('<a href="' + linkUrl + '" rel="nofollow">' + partText + '</a>');
-      // }
-      // else {
-      //   output.push(partText);
-      // }
       
-
-      // if (color) {
-      //   output.push(`</span>`)
-      // }
-      // if (partAtts.ITALIC) {
-      //   output.push('</i>');
-      // }
-      // if (partAtts.BOLD) {
-      //   output.push('</strong>');
-      // }
-      // if (partAtts.UNDERLINE) {
-      //   output.push('</u>');
-      // }
-
-      // if (partText.indexOf('\r')){
-      //   //output.push('</br>');
-      // }
-
       processed = partText
       processed = formatTextUrl(processed)
       processed = formatTextUrl(processed, item.getLinkUrl(startPos))
