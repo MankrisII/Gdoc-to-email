@@ -4,3 +4,4 @@ privateData.js
 .claspignore
 appsscript.json
 test-convert-css.js
+uploadImage.js
