@@ -374,7 +374,7 @@ function hasPositionedImage(item) {
  * @param {*} item 
  * @returns boolean
  */
-function isInlinImage(item) {
+function isInlineImage(item) {
   return (item.getType() == DocumentApp.ElementType.INLINE_IMAGE)
 }
 
@@ -506,7 +506,7 @@ function processItem(item, listCounters) {
   if (isButton(item)) return processButton(item)
   
   // process inline images
-  if (isInlinImage(item)) return processInlineImage(item)
+  if (isInlineImage(item)) return processInlineImage(item)
   
   // process positioned images
   if(hasPositionedImage(item)) output.push(processPositionedImages(item))
