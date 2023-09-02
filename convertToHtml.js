@@ -338,25 +338,35 @@ function processButton(item) {
 
 var positionedImage = false
 /**
- * if Paragraph has positioned image, return html tag for the positioned image
+ * Generate html for the positioned image
  * @param {Paragraph} item 
- * @returns 
+ * @returns string
  */
 function processPositionedImages(item) {
-  if(typeof item.getPositionedImages != "undefined" && item.getPositionedImages().length >0){
-    //Logger.log(item.getText())
-    positionedImage = true
-    var image = item.getPositionedImages()[0];
+  //Logger.log(item.getText())
+  positionedImage = true
+  var image = item.getPositionedImages()[0];
 
-    var imageData = getPositionImage(image.getId());
-    //Logger.log(JSON.stringify(imageData))
-    return`<div class="flex-container" ${getStyles('.flex-container','#content .flex-container')}>
-                  <div class="flex-element flex-element-img" ${getStyles('.flex-element', '.flex-element-img')}>
-                    <img class="img250" src="${imageData.url}" ${getStyles('#content .img250')}>
-                  </div>
-                  <div class="flex-element flex-element-text" ${getStyles('.flex-element', '.flex-element-text')}>`
-    //Logger.log("url = "+imageData.url)
+  var imageData = getPositionImage(image.getId());
+  //Logger.log(JSON.stringify(imageData))
+  return`<div class="flex-container" ${getStyles('.flex-container','#content .flex-container')}>
+                <div class="flex-element flex-element-img" ${getStyles('.flex-element', '.flex-element-img')}>
+                  <img class="img250" src="${imageData.url}" ${getStyles('#content .img250')}>
+                </div>
+                <div class="flex-element flex-element-text" ${getStyles('.flex-element', '.flex-element-text')}>`
+  //Logger.log("url = "+imageData.url)
+}
+
+/**
+ * Check if paragraph has positioned image
+ * @param {Paragraph} item 
+ * @returns boolean
+ */
+function hasPositionedImage(item) {
+  if (item.getPositionedImages && item.getPositionedImages().length > 0) {
+    return true
   }
+  return false
 }
 
 function isInlinImage(item) {
@@ -494,7 +504,7 @@ function processItem(item, listCounters) {
   if (isInlinImage(item)) return processInlineImage(item)
   
   // process positioned images
-  output.push(processPositionedImages(item))
+  if(hasPositionedImage(item)) output.push(processPositionedImages(item))
 
   
   if (item.getType() == DocumentApp.ElementType.HORIZONTAL_RULE) {
