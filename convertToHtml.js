@@ -369,6 +369,11 @@ function hasPositionedImage(item) {
   return false
 }
 
+/**
+ * Check if passed item is INLINE_IMAGE
+ * @param {*} item 
+ * @returns boolean
+ */
 function isInlinImage(item) {
   return (item.getType() == DocumentApp.ElementType.INLINE_IMAGE)
 }
