@@ -529,7 +529,7 @@ function processItem(item, listCounters) {
   
   // process paragraph elements
   if (item.getType() == DocumentApp.ElementType.PARAGRAPH) {
-    if (item.getNumChildren() == 0) return "";
+    if (item.getNumChildren() == 0) return ""; // ignore empty paragraph
     if (item.getChild(0).getType() != DocumentApp.ElementType.HORIZONTAL_RULE) {
         [prefix, suffix] = processHeading(item)
     }
