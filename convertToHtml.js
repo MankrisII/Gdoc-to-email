@@ -344,16 +344,21 @@ var positionedImage = false
  */
 function processPositionedImages(item) {
   //Logger.log(item.getText())
-  positionedImage = true
-  var image = item.getPositionedImages()[0];
-
-  var imageData = getPositionImage(image.getId());
-  //Logger.log(JSON.stringify(imageData))
-  return`<div class="flex-container" ${getStyles('.flex-container','#content .flex-container')}>
-                <div class="flex-element flex-element-img" ${getStyles('.flex-element', '.flex-element-img')}>
-                  <img class="img250" src="${imageData.url}" ${getStyles('#content .img250')}>
-                </div>
-                <div class="flex-element flex-element-text" ${getStyles('.flex-element', '.flex-element-text')}>`
+  if (!positionedImage) {
+    positionedImage = true
+    var image = item.getPositionedImages()[0];
+  
+    var imageData = getPositionImage(image.getId());
+    //Logger.log(JSON.stringify(imageData))
+    return`<div class="flex-container" ${getStyles('.flex-container','#content .flex-container')}>
+                  <div class="flex-element flex-element-img" ${getStyles('.flex-element', '.flex-element-img')}>
+                    <img class="img250" src="${imageData.url}" ${getStyles('#content .img250')}>
+                  </div>
+                  <div class="flex-element flex-element-text" ${getStyles('.flex-element', '.flex-element-text')}>`
+  } else {
+    positionedImage = false
+    return `</div></div>`
+  }
   //Logger.log("url = "+imageData.url)
 }
 
@@ -515,11 +520,11 @@ function processItem(item, listCounters) {
   if (item.getType() == DocumentApp.ElementType.HORIZONTAL_RULE) {
     // closing tags for positioned image on paragraph
     if (positionedImage) {
-      positionedImage = false
-      return `</div></div>`
+      return processPositionedImages(item)
+    } else {
+      return processHighlightedBlock()  
     }
     
-    return processHighlightedBlock()  
   }
   
   // process paragraph elements
