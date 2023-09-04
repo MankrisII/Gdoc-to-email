@@ -563,13 +563,18 @@ function processItem(item, listCounters) {
   return output.join('');
 }
 
-
+/**
+ * Process Gdoc text elements
+ * @param {Text} item 
+ * @returns 
+ */
 function processText(item) {
   let output = []
   var text = item.getText();
   let processed = '';
   var indices = item.getTextAttributeIndices();
 
+  // text element does not have parts with différents styles
   if (indices.length <= 1) {
     processed = text
 
@@ -582,6 +587,7 @@ function processText(item) {
 
     output.push(processed)
   }
+  // text element has parts with differents styles
   else {
     //Logger.log("type = "+item.getType());
     //Logger.log("text = "+text);
