@@ -60,7 +60,7 @@ function isDefaultButton(item) {
  */
 function clearButtons(){
   documentProperties.deleteProperty('buttons')
-  documentProperties.setProperty('buttons',JSON.stringify(defaltButtonsUrl))
+  documentProperties.setProperty('buttons',JSON.stringify(defaltButtonsUrls))
 }
 
 /**
