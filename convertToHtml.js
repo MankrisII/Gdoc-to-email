@@ -608,7 +608,7 @@ function processText(item) {
       
       processed = partText
       processed = formatTextUrl(processed)
-      processed = formatTextUrl(processed, item.getLinkUrl(startPos))
+      processed = formatLinkUrl(processed, item.getLinkUrl(startPos))
       processed = formatBold(processed, partAtts.BOLD)
       processed = formatItalic(processed, partAtts.ITALIC)
       processed = formatUnderline(processed, partAtts.UNDERLINE)
@@ -628,10 +628,7 @@ function formatTextUrl(text) {
 }
 
 function formatLinkUrl(text, url) {
-  if (url) {
-    return `<a href="${url}" rel="nofollow">${text}</a>`;
-  }
-  return text
+   return url ? `<a href="${url}" rel="nofollow">${text}</a>` : text;
 }
 
 function formatBold(text, isBold) {
