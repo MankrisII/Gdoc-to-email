@@ -516,7 +516,8 @@ function processItem(item, listCounters) {
   // process positioned images
   if(hasPositionedImage(item)) output.push(processPositionedImages(item))
 
-  
+  // ElementType.HORIZONTAL_RULE can be use tu mark the end of text aside of positioned image
+  // or to delimit the start and end of highlighted block
   if (item.getType() == DocumentApp.ElementType.HORIZONTAL_RULE) {
     // closing tags for positioned image on paragraph
     if (positionedImage) {
@@ -524,7 +525,6 @@ function processItem(item, listCounters) {
     } else {
       return processHighlightedBlock()  
     }
-    
   }
   
   // process paragraph elements
