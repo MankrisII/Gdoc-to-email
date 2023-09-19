@@ -109,67 +109,30 @@ function archiveOnMairieWebSite() {
 
 function clearGoogleDoc(){
   var body = DocumentApp.getActiveDocument().getBody();
-  var numChildren = body.getNumChildren();
-  var childsToRemoveIds = []
-  var headinOneId = 0
-
-  // Walk through all the child elements of the body.
-  var start = false;
-  //Logger.log("DocumentApp.ParagraphHeading.HEADING1 = "+DocumentApp.ParagraphHeading.HEADING1)
-  for (var i = 0; i < numChildren; i++) {
+  var currentChildId = getContentFirstChildId()
+  var child = body.getChild(currentChildId)
+  
+  while (child.getHeading() != DocumentApp.ParagraphHeading.HEADING3 || child.getText() != "À venir" ) {
+    var t = child.getText()
     
-    var child = body.getChild(i);
-    //Logger.log("child.getHeading() = "+child.getHeading())
-    //Logger.log("child.getHeading() != DocumentApp.ParagraphHeading.HEADING1 = "+(child.getHeading() != DocumentApp.ParagraphHeading.HEADING1))
-    
-    //Logger.log('child.getType() = '+child.getType())
-    if(!start && child.getHeading() != DocumentApp.ParagraphHeading.HEADING1) {
-      continue;
-    }else if(!start){
-      start = true;
-      headinOneId = i
-      //Logger.log('start = true')
-      continue;
-    };
-    //Logger.log(child.getText())
-    if(child.getHeading() != DocumentApp.ParagraphHeading.HEADING2){
-      if(child.getHeading() == DocumentApp.ParagraphHeading.HEADING3 && (child.getText() == "À venir" )){
-        //Logger.log('fin')  
-        break;
-      }
-      if (isDefaultButton(child)) {
-        break;
-      }
-      childsToRemoveIds.push(i)
-      //child.removeFromParent();
-      //Logger.log('remove child ')
+    if (child.getHeading() == DocumentApp.ParagraphHeading.HEADING2) {
+      currentChildId ++
+      var p = body.insertParagraph(currentChildId,"Titre")
+      p.setHeading(DocumentApp.ParagraphHeading.HEADING3)
+      currentChildId ++
+      p = body.insertParagraph(currentChildId, "Description")
+      currentChildId ++
+      child = body.getChild(currentChildId)
+      continue
     }
+
+    if(isDefaultButton(child)){
+      currentChildId ++
+      child = body.getChild(currentChildId)
+      continue
+    }
+
+    child.removeFromParent()
+    child = body.getChild(currentChildId)
   }
-
-  // remove text
-  if(childsToRemoveIds.length > 0){
-    childsToRemoveIds.reverse()
-    childsToRemoveIds.forEach(e => {
-      var child = body.getChild(e)
-      //Logger.log("to remove : "+child.getText())
-      child.removeFromParent()
-    })
-  }
-
-  // add default text
-  addDefaultContent(headinOneId)
-}
-
-function addDefaultContent(index = 29){
-  var body = DocumentApp.getActiveDocument().getBody();
-    
-  // ajouter un texte par defaut aux 3 sections
-  for(var i = 0; i < 3; i++){
-    index += 2
-    var p = body.insertParagraph(index,"Titre")
-    p.setHeading(DocumentApp.ParagraphHeading.HEADING3)
-    index += 1
-    p = body.insertParagraph(index,"Description")
-  }
-
 }
