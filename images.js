@@ -57,7 +57,7 @@ addImage(isPositionedImage = true) {
         if(!matchHttp){
           url = onlineImageFolder+response.getResponseText()
         }else{
-          url = getResponseText()
+          url = response.getResponseText()
         }
         
         // download the image
