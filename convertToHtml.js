@@ -343,23 +343,28 @@ var positionedImage = false
  * @returns string
  */
 function processPositionedImages(item) {
-  //Logger.log(item.getText())
-  if (!positionedImage) {
-    positionedImage = true
-    var image = item.getPositionedImages()[0];
+  if (!item && !positionedImage) return;
   
-    var imageData = getPositionImage(image.getId());
-    //Logger.log(JSON.stringify(imageData))
-    return`<div class="flex-container" ${getStyles('.flex-container','#content .flex-container')}>
-                  <div class="flex-element flex-element-img" ${getStyles('.flex-element', '.flex-element-img')}>
-                    <img class="img250" src="${imageData.url}" ${getStyles('#content .img250')}>
-                  </div>
-                  <div class="flex-element flex-element-text" ${getStyles('.flex-element', '.flex-element-text')}>`
-  } else {
+  if (!item && positionedImage) {
     positionedImage = false
     return `</div></div>`
   }
-  //Logger.log("url = "+imageData.url)
+  var html = ''
+  if (item && positionedImage) {
+    html = `</div></div>`
+  }
+  
+  positionedImage = true
+  var image = item.getPositionedImages()[0];
+
+  var imageData = getPositionImage(image.getId());
+
+  html += `<div class="flex-container" ${getStyles('.flex-container','#content .flex-container')}>
+                <div class="flex-element flex-element-img" ${getStyles('.flex-element', '.flex-element-img')}>
+                  <img class="img250" src="${imageData.url}" ${getStyles('#content .img250')}>
+                </div>
+                <div class="flex-element flex-element-text" ${getStyles('.flex-element', '.flex-element-text')}>`
+  return html
 }
 
 /**
@@ -411,11 +416,12 @@ function processHeading(item) {
     case DocumentApp.ParagraphHeading.HEADING4:
       prefix = "<h4>", suffix = "</h4>"; break;
     case DocumentApp.ParagraphHeading.HEADING3:
+      prefix = processPositionedImages()
       if(firstH3){
-        prefix = `<h3 class="firstH3" ${getStyles('#content h3','#content h3.firstH3')}>`;
+        prefix += `<h3 class="firstH3" ${getStyles('#content h3','#content h3.firstH3')}>`;
         firstH3 = false;
       }else{
-        prefix = `<h3 ${getStyles('#content h3')}>`;
+        prefix += `<h3 ${getStyles('#content h3')}>`;
       }
       suffix = "</h3>"; 
       break;
@@ -520,11 +526,7 @@ function processItem(item, listCounters) {
   // or to delimit the start and end of highlighted block
   if (item.getType() == DocumentApp.ElementType.HORIZONTAL_RULE) {
     // closing tags for positioned image on paragraph
-    if (positionedImage) {
-      return processPositionedImages(item) // TODO - optional horizontal rule after positioned image
-    } else {
-      return processHighlightedBlock()  
-    }
+    return processPositionedImages() || processHighlightedBlock()
   }
   
   // process paragraph elements
