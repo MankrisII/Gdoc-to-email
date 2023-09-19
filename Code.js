@@ -41,6 +41,14 @@ const archivedCampaignsFolderId = "1xd2xA-2wIfRgFT03TO1QHXMFTr3PQM8G"; // archiv
 const nextCampaignfolderId = "1p2uEY2NKHsqckZwPH_uGOQFOH4W4lw8M"; // current folder of google doc
 const nextCampaignImageFolder = '1z91QeLl9o0V8v5_DiJ_zwtZLCqOIoHDU'; // storage folder for futur campaign images or docs (not the one who is curently creating)
 const nextCampainFileId = "1SfOEQED15_4t1upUk-ztXymMf6t7dP0hNw8uNBqm000"; // file for futur campaign (not the one who is curently creating)
+const fileAndFolderIdsEcxcludedFromArchiving = [
+  DocumentApp.getActiveDocument().getId(),
+  "1SfOEQED15_4t1upUk-ztXymMf6t7dP0hNw8uNBqm000",
+  "11lt-KGJtXpZaPUbYRVTJ3-tzUjvW48fL",
+  "1z91QeLl9o0V8v5_DiJ_zwtZLCqOIoHDU",
+  "1senW3ubfg3BxH10UHtT9pMUlMQj2teTZ",
+  "1X4M3xyZ9usuD_sZGN2KOlZoSiC_HwQfPULpQpSHddR8"
+]
 const currentFileId = "1GtqWZ9O1DQuP6OCaRYlDRnW1jdJvFVCFnzNuMreoUk0"; // current file, current creating campaign
 const documentProperties = PropertiesService.getDocumentProperties();
 

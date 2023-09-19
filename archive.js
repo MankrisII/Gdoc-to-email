@@ -1,7 +1,7 @@
 function archiver() {
    var archivedDoc = archiveNewsletterDoc()
   updatePreviousNewsletterLink(archivedDoc)
-  archivelinkedFiles()
+  archiveLinkedFiles()
   archiveOnMairieWebSite()
   clearGoogleDoc()
 
@@ -54,34 +54,24 @@ function updatePreviousNewsletterLink(file) {
 
 }
 
-function archivelinkedFiles() {
-  var currentFolder = DriveApp.getFolderById(nextCampaignfolderId)
-  Logger.log('currentfolder name = ' + currentFolder.getName())
+function archiveLinkedFiles() {
+  var currentFile = DriveApp.getFileById(DocumentApp.getActiveDocument().getId())
+  var currentFolder = currentFile.getParents().next()
   var destyFolder = DriveApp.getFolderById(documentProperties.getProperty('imagesCampaignFolderId'))
-  Logger.log('destyFolder name = ' + destyFolder.getName())
-
+  
   var files = currentFolder.getFiles()
 
   while (files.hasNext()) {
     var file = files.next()
-    Logger.log('file id : ' + file.getId())
-    Logger.log('file name : ' + file.getName())
-    if (file.getId() != DocumentApp.getActiveDocument().getId()
-     && file.getId() != nextCampainFileId) {
-      Logger.log('move file')
+    if (!fileAndFolderIdsEcxcludedFromArchiving.includes(file.getId())) {
       file.moveTo(destyFolder)
     }
-
   }
+
   var folders = currentFolder.getFolders()
   while (folders.hasNext()) {
     var folder = folders.next()
-
-    Logger.log('folder id : ' + file.getId())
-    Logger.log('folder name : ' + file.getName())
-
-    if (folder.getId() != nextCampaignImageFolder) { // ne pas archiver le dossier des fichiers pour les prochaines newsletter
-      Logger.log('move folder')
+    if (!fileAndFolderIdsEcxcludedFromArchiving.includes(folder.getId())) {
       folder.moveTo(destyFolder)
     }
   }
