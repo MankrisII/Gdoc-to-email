@@ -98,7 +98,7 @@ function onOpen() {
     .addItem('Envoyer le HTML par mail','sendHtmlByEmail')
     .addItem('Archiver la newsletter', 'archiver')
     .addSeparator()
-    .addItem('Envoyer le mail à la plénière', 'sendMailToPleniere')
+    .addItem('Envoyer le mail à la plénière', 'sendForContributions')
     .addItem('Envoyer le mail en correction', 'sendForCorrection')
     .addSeparator()
     .addItem('Inserer un bouton', 'menuAddButton')
@@ -112,7 +112,7 @@ function onOpen() {
 }
 
 // send an email to contributors to give the link of the Gdocs et the dead line
-function sendMailToPleniere(){
+function sendForContributions(){
   var campaignSendingDate = new Date(documentProperties.getProperty('date'))
   var deadLineToContribute = new Date(campaignSendingDate.getTime() - 87000000)
   var dateOptions = {  year: 'numeric', month: 'long', day: 'numeric' }
