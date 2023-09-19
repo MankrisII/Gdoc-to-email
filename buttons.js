@@ -89,7 +89,7 @@ function menuAddButton() {
     if (response.getSelectedButton() != DocumentApp.getUi().Button.OK) { 
       return;
     }
-    var url = formatLinkUrl(response.getResponseText())
+    var url = formatAssetsUrl(response.getResponseText())
     
     //stylized the element
     element.setLinkUrl(url)
@@ -110,16 +110,3 @@ function menuAddButton() {
   }
 }
 
-/**
- * format the passed url
- *
- * @param {string} urlToFormat
- * @return {string} 
- */
-function formatLinkUrl(urlToFormat){
-  /**
-   * TODO
-   */
-  let url = urlToFormat
-  return url;
-}

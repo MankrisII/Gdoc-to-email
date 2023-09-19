@@ -48,12 +48,12 @@ function addImage(isPositionedImage = true) {
     // Adds the image to the document, anchored to the first paragraph.
     
     // is the complete url or just the image name is provided ?
-    var url
-    if(!imageUrlPrompt.getResponseText().match(/^https?:\/\//)){
+    var url = formatAssetsUrl(imageUrlPrompt.getResponseText())
+    /*if(!imageUrlPrompt.getResponseText().match(/^https?:\/\//)){
       url = defaultAssetsFolderPath+imageUrlPrompt.getResponseText()
     }else{
       url = imageUrlPrompt.getResponseText()
-    }
+    }*/
     
     // download the image
     var imageBlob = UrlFetchApp.fetch(url)
