@@ -260,23 +260,10 @@ function ConvertGoogleDocToCleanHtml() {
 
   // Walk through all the child elements of the body.
 
-  // ignore first part of the Gdoc containing user instructions to feel the Gdoc
-  var start = false;
+  var contentStartId = getContentFirstChildId()
   
-  for (var i = 0; i < numChildren; i++) {
+  for (var i = contentStartId; i < numChildren; i++) {
     var child = body.getChild(i);
-    //Logger.log("child.getHeading() = "+child.getHeading())
-    //Logger.log("child.getHeading() != DocumentApp.ParagraphHeading.HEADING1 = "+(child.getHeading() != DocumentApp.ParagraphHeading.HEADING1))
-    
-    //Logger.log('child.getType() = '+child.getType())
-    // does not start the conversion until it reaches the starting point defined by the paragraph DocumentApp.ParagraphHeading.HEADING1
-    if(!start && child.getHeading() != DocumentApp.ParagraphHeading.HEADING1) {
-      continue;
-    }else if(!start){
-      start = true;
-      //Logger.log('start = true')
-      continue;
-    };
     output.push(processItem(child, listCounters,));
   }
 
@@ -325,6 +312,18 @@ function ConvertGoogleDocToCleanHtml() {
   return html;
 }
 
+function getContentFirstChildId() {
+  var body = DocumentApp.getActiveDocument().getBody();
+  var numChildren = body.getNumChildren()
+
+  for (var i = 0; i < numChildren; i++) {
+    var child = body.getChild(i);
+    if (child.getHeading() == DocumentApp.ParagraphHeading.HEADING1) {
+      return i + 1
+    }
+  }
+}
+
 /**
  * return html for styled button
  * @param {Paragraph} item 
@@ -343,7 +342,7 @@ var positionedImage = false
  * @returns string
  */
 function processPositionedImages(item) {
-  if (!item && !positionedImage) return;
+  if (!item && !positionedImage) return '';
   
   if (!item && positionedImage) {
     positionedImage = false
