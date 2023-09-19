@@ -30,67 +30,55 @@ function menuAddinlineImage(){
  * 
  * @param {boolean} isPositionedImage // complete url or the name of the image. If only the name is provided, the default url path 'onlineImageFolder' is used
  */
-function 
-addImage(isPositionedImage = true) {
+function addImage(isPositionedImage = true) {
   
   var cursor = DocumentApp.getActiveDocument().getCursor();
-  if (cursor) {
-    // Attempt to insert text at the cursor position. If the insertion returns null, the cursor's
-    // containing element doesn't allow insertions, so show the user an error message.
-    var element = cursor.getElement()
+  if (!cursor) return DocumentApp.getUi().alert('Cannot find a cursor.');
+  
+  var element = cursor.getElement()
+  if(!(element.getType() == DocumentApp.ElementType.PARAGRAPH &&
+    element.getHeading() == DocumentApp.ParagraphHeading.NORMAL)) // check that image is not insert in heading 
+    return DocumentApp.getUi().alert('Cannot insert image here.');
+        
+  // ask for image url
+  var imageUrlPrompt = DocumentApp.getUi().prompt('Insérer une image',onlineImageFolder,DocumentApp.getUi().ButtonSet.OK_CANCEL);
+
+  if (imageUrlPrompt.getSelectedButton() == DocumentApp.getUi().Button.OK) {
+    // Fetches the specified image URL.  
+    // Adds the image to the document, anchored to the first paragraph.
     
-    if (
-      element.getType() == DocumentApp.ElementType.PARAGRAPH &&
-      element.getHeading() == DocumentApp.ParagraphHeading.NORMAL) { // check that image is not isert in heading 
-      
-      // ask for image url
-      var response = DocumentApp.getUi().prompt('Insérer une image',onlineImageFolder,DocumentApp.getUi().ButtonSet.OK_CANCEL);
-
-      if (response.getSelectedButton() == DocumentApp.getUi().Button.OK) {
-        // Fetches the specified image URL.  
-        // Adds the image to the document, anchored to the first paragraph.
-        
-        // is the complete url or just the image name is provided ?
-        var matchHttp = response.getResponseText().match(/^https?:\/\//)
-        var url
-
-        if(!matchHttp){
-          url = onlineImageFolder+response.getResponseText()
-        }else{
-          url = response.getResponseText()
-        }
-        
-        // download the image
-        var imageBlob = UrlFetchApp.fetch(url)
-        var image
-
-        if(isPositionedImage){
-          image = element.addPositionedImage(imageBlob);
-          
-          // positioned images must be 250px width
-          resizeImage(image, 250) 
-          
-          // store image data for html conversion
-          var docImages = getDocImages();
-          var imgData = {id : image.getId(), url : url}
-          docImages.push(imgData)
-          setDocImages(docImages)
-
-        }else{
-          image = cursor.insertInlineImage(imageBlob)
-          // inline images must be 600px width
-          resizeImage(image, 600)
-          
-          // store image data for html conversion
-          image.setAltDescription(url)
-        }
-        
-      }
-    }else {
-      DocumentApp.getUi().alert('Cannot insert image here.');
+    // is the complete url or just the image name is provided ?
+    var url
+    if(!imageUrlPrompt.getResponseText().match(/^https?:\/\//)){
+      url = onlineImageFolder+imageUrlPrompt.getResponseText()
+    }else{
+      url = imageUrlPrompt.getResponseText()
     }
-  } else {
-    DocumentApp.getUi().alert('Cannot find a cursor.');
+    
+    // download the image
+    var imageBlob = UrlFetchApp.fetch(url)
+    var image
+
+    if(isPositionedImage){
+      image = element.addPositionedImage(imageBlob);
+      
+      // positioned images must be 250px width
+      resizeImage(image, 250) 
+      
+      // store image data for html conversion
+      var docImages = getDocImages();
+      var imgData = {id : image.getId(), url : url}
+      docImages.push(imgData)
+      setDocImages(docImages)
+
+    }else{
+      image = cursor.insertInlineImage(imageBlob)
+      // inline images must be 600px width
+      resizeImage(image, 600)
+      
+      // store image data for html conversion
+      image.setAltDescription(url)
+    }
   }
 }
 
