@@ -521,7 +521,7 @@ function processItem(item, listCounters) {
   if (item.getType() == DocumentApp.ElementType.HORIZONTAL_RULE) {
     // closing tags for positioned image on paragraph
     if (positionedImage) {
-      return processPositionedImages(item)
+      return processPositionedImages(item) // TODO - optional horizontal rule after positioned image
     } else {
       return processHighlightedBlock()  
     }
