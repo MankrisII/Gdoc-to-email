@@ -41,7 +41,7 @@ function addImage(isPositionedImage = true) {
     return DocumentApp.getUi().alert('Cannot insert image here.');
         
   // ask for image url
-  var imageUrlPrompt = DocumentApp.getUi().prompt('Insérer une image',onlineImageFolder,DocumentApp.getUi().ButtonSet.OK_CANCEL);
+  var imageUrlPrompt = DocumentApp.getUi().prompt('Insérer une image',defaultAssetsFolderPath,DocumentApp.getUi().ButtonSet.OK_CANCEL);
 
   if (imageUrlPrompt.getSelectedButton() == DocumentApp.getUi().Button.OK) {
     // Fetches the specified image URL.  
@@ -50,7 +50,7 @@ function addImage(isPositionedImage = true) {
     // is the complete url or just the image name is provided ?
     var url
     if(!imageUrlPrompt.getResponseText().match(/^https?:\/\//)){
-      url = onlineImageFolder+imageUrlPrompt.getResponseText()
+      url = defaultAssetsFolderPath+imageUrlPrompt.getResponseText()
     }else{
       url = imageUrlPrompt.getResponseText()
     }
