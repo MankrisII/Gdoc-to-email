@@ -73,40 +73,35 @@ function clearButtons(){
 function menuAddButton() {
   var selection = DocumentApp.getActiveDocument().getSelection() 
   // test the user text selection
-  if(selection){
-    var elements = selection.getRangeElements();
-    if(elements.length > 1){
-      DocumentApp.getUi().alert("veuillez ne selectionnez qu'un seul élément"); 
-      return; 
-    }else if(elements[0].isPartial()){
-      DocumentApp.getUi().alert("veuillez selectionnez un élément entier");  
-      return;
-    }
-    var element = elements[0].getElement()
+  if (!selection) return DocumentApp.getUi().alert("Aucun texte selectionné");
     
-    //prompt for url
-    var response = DocumentApp.getUi().prompt('Adresse du lien','URL',DocumentApp.getUi().ButtonSet.OK_CANCEL);
-    if (response.getSelectedButton() != DocumentApp.getUi().Button.OK) { 
-      return;
-    }
-    var url = formatAssetsUrl(response.getResponseText())
-    
-    //stylized the element
-    element.setLinkUrl(url)
-    element.setAlignment(DocumentApp.HorizontalAlignment.CENTER)
-    element.setBackgroundColor("#FFA000")
-    element.setBold(true)
-    element.setForegroundColor("#ffffff") 
-    element.setUnderline(false)
-
-    // save url
-    let buttons = getButtons()
-    buttons.push(url)
-    documentProperties.setProperty('buttons',JSON.stringify(buttons))
-    
-  }else{
-    DocumentApp.getUi().alert("Aucun texte selectionné");
+  var elements = selection.getRangeElements();
+  if(elements.length > 1){
+    return DocumentApp.getUi().alert("veuillez ne selectionnez qu'un seul élément"); 
+  
+  } else if (elements[0].isPartial()) {
+    return DocumentApp.getUi().alert("veuillez selectionnez un élément entier");  
+  }
+  var element = elements[0].getElement()
+  
+  //prompt for url
+  var response = DocumentApp.getUi().prompt('Adresse du lien','URL',DocumentApp.getUi().ButtonSet.OK_CANCEL);
+  if (response.getSelectedButton() != DocumentApp.getUi().Button.OK) { 
     return;
   }
+  var url = formatAssetsUrl(response.getResponseText())
+  
+  //stylized the element
+  element.setLinkUrl(url)
+  element.setAlignment(DocumentApp.HorizontalAlignment.CENTER)
+  element.setBackgroundColor("#FFA000")
+  element.setBold(true)
+  element.setForegroundColor("#ffffff") 
+  element.setUnderline(false)
+
+  // save url
+  let buttons = getButtons()
+  buttons.push(url)
+  documentProperties.setProperty('buttons',JSON.stringify(buttons))
 }
 
