@@ -71,19 +71,19 @@ function clearButtons(){
  * store url in document property 'bottons'
  */
 function menuAddButton() {
-  var selection = DocumentApp.getActiveDocument().getSelection() 
-  // test the user text selection
-  if (!selection) return DocumentApp.getUi().alert("Aucun texte selectionné");
-    
-  var elements = selection.getRangeElements();
-  if(elements.length > 1){
-    return DocumentApp.getUi().alert("veuillez ne selectionnez qu'un seul élément"); 
+  var cursor = DocumentApp.getActiveDocument().getCursor();
+  if (!cursor) return DocumentApp.getUi().alert('Vous devez positionner le curseur sur un texte.');
+
+  var element = cursor.getElement()
+  var type = element.getType().toString();
+  var id = 0
   
-  } else if (elements[0].isPartial()) {
-    return DocumentApp.getUi().alert("veuillez selectionnez un élément entier");  
+  while(element.getType() != DocumentApp.ElementType.PARAGRAPH || id > 10){
+    element = element.getParent()
+    type = element.getType().toString();
+    id ++
   }
-  var element = elements[0].getElement()
-  
+
   //prompt for url
   var response = DocumentApp.getUi().prompt('Adresse du lien','URL',DocumentApp.getUi().ButtonSet.OK_CANCEL);
   if (response.getSelectedButton() != DocumentApp.getUi().Button.OK) { 
