@@ -213,6 +213,7 @@ function getCampaignConf(name = null){
     campaignConf = defaultCampaignConf;
     campaignConf.sender.name = campainSenderName
     campaignConf.sender.email = campainSenderEmail
+    campaignConf.replyTo = campainSenderEmail
     campaignConf.toField = testCampaignToEmail
     //campaignConf.htmlContent = ConvertGoogleDocToCleanHtml()
     documentProperties.setProperty('campaignConf',JSON.stringify(campaignConf))
