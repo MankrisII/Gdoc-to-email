@@ -141,13 +141,14 @@ Logger.log(content)
 // send an email to corretors to correct spelling
 function sendForCorrection(){
   var campaignSendingDate = new Date(documentProperties.getProperty('date'))
-  var deadLineToContribute = new Date(campaignSendingDate.getTime() - 87000000)
   var dateOptions = {  year: 'numeric', month: 'long', day: 'numeric' }
   
   var content = `Bonjour,
 
 Voici le fichier de la newsletter pour relecture :
 ${DocumentApp.getActiveDocument().getUrl()}
+
+Vous avez jusqu’au ${campaignSendingDate.toLocaleDateString('fr-FR', dateOptions)} midi pour apporter vos corrections.
 
 Merci,`;
 Logger.log(content)
