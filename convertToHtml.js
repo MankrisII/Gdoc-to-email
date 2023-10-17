@@ -585,6 +585,7 @@ function processText(item) {
     processed = formatItalic(processed, item.isItalic())
     processed = formatUnderline(processed, item.isUnderline())
     processed = formatColor(processed, item.getForegroundColor())
+    processed = processed.replaceAll("\r","<br/>")
 
     output.push(processed)
   }
