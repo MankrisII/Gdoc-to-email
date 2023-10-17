@@ -597,7 +597,7 @@ function processText(item) {
       var startPos = indices[i];
       var endPos = i+1 < indices.length ? indices[i+1]: text.length;
       var partText = text.substring(startPos, endPos);
-      partText = partText.replace("\r","<br>")      
+      partText = partText.replaceAll("\r","<br/>")      
      
       // TODO - superscript
       // // If someone has written [xxx] and made this whole text some special font, like superscript
