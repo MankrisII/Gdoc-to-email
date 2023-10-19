@@ -17,7 +17,8 @@ function archiveNewsletterDoc() {
   //copy et archivage du document
   var destinationFolder = DriveApp.getFolderById(documentProperties.getProperty('campaignFolderId'))
   var currentFile = DriveApp.getFileById(DocumentApp.getActiveDocument().getId())
-  var archivedFile = currentFile.makeCopy(documentProperties.getProperty('date') + " - newsletter", destinationFolder)
+  var fileName = "n°" + getCampaignNumber() + " - " + getCampaignDate() + " - newsletter"
+  var archivedFile = currentFile.makeCopy(fileName, destinationFolder)
   return archivedFile
 }
 
