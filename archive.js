@@ -91,6 +91,7 @@ function archiveOnMairieWebSite() {
       html: ConvertGoogleDocToCleanHtml(),
       title: `n°${getCampaignNumber()} - ${date.toLocaleDateString('fr-FR', dateOptions)}`,
       date: documentProperties.getProperty('date'),
+      num : getCampaignNumber().toString(),
       apiKey: mairieApiKey,
     }
   }
