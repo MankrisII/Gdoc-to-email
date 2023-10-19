@@ -73,8 +73,10 @@ function addImage(isPositionedImage = true) {
 
     }else{
       image = cursor.insertInlineImage(imageBlob)
-      // inline images must be 600px width
-      resizeImage(image, 600)
+      if (image.getWidth() > 600) {
+        // inline images must be 600px width max
+        resizeImage(image, 600)
+      }
       
       // store image data for html conversion
       image.setAltDescription(url)

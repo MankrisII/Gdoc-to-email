@@ -77,11 +77,11 @@ body {
     margin-bottom: 10px;
     width: 100%;
 }
-
-#content .img600 {}
-
+.img600{
+  text-align : center;
+}
 #content .img600 img {
-    width: 100%;
+    max-width: 100%;
 }
 
 #content h2 {
