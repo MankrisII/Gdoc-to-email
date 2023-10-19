@@ -166,12 +166,6 @@ function getUserEmail(){
   Logger.log(userEmail)
 }
 
-// clear campaign folders properties
-function clearCampainFoldersIds(){
-  documentProperties.deleteProperty('campaignFolderId')
-   documentProperties.deleteProperty('imagesCampaignFolderId')
-}
-
 // update the title of the GDocs
 function updateDocTitle(){
   //var numChildren = DocumentApp.getActiveDocument().getBody().getNumChildren()

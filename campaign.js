@@ -132,6 +132,12 @@ function clearCampaignNumber() {
   documentProperties.deleteProperty('campaignNumber')
 }
 
+// clear campaign folders properties
+function clearCampainFoldersIds(){
+  documentProperties.deleteProperty('campaignFolderId')
+  documentProperties.deleteProperty('imagesCampaignFolderId')
+}
+
 /**
  * delete all configurations props and reset to default
  */
