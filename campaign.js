@@ -162,6 +162,7 @@ function setCampaignNumber(number) {
   updateCampaignName()
   updateCampaignSubject()
   updateDocTitle()
+  createUpdateCampaignFolders()
   return number
 }
 
@@ -264,7 +265,7 @@ function menuPromptSetCampaignDate(){
 function setCampaignDate(dateStr) {
   documentProperties.setProperty('date',dateStr)
   updateCampaignName()
-  createUpdateCampaignFolders(dateStr)
+  createUpdateCampaignFolders()
   updateDocTitle()
   
 }
@@ -297,18 +298,19 @@ function updateCampaignName(){
  * 
  * @param {string} name the campaign sending date 'YYYY-MM-DD'
  */
-function createUpdateCampaignFolders(name) {  
-    // if the campaign folders have already been created update the name
-    if(documentProperties.getProperty('campaignFolderId')){
-      DriveApp.getFolderById(documentProperties.getProperty('campaignFolderId')).setName(name)
-    } else {
-      // else, create folders
-      var campaignsFolder = DriveApp.getFolderById(archivedCampaignsFolderId);
-      var campaignFolder = campaignsFolder.createFolder(name)
-      documentProperties.setProperty("campaignFolderId",campaignFolder.getId())
-      var imageCampaignFolder = campaignFolder.createFolder("fichiers liés")
-      documentProperties.setProperty("imagesCampaignFolderId",imageCampaignFolder.getId())
-    }
+function createUpdateCampaignFolders() {  
+  var folderName = "n°"+getCampaignNumber()+" - "+getCampaignDate()
+  // if the campaign folders have already been created update the name
+  if(documentProperties.getProperty('campaignFolderId')){
+    DriveApp.getFolderById(documentProperties.getProperty('campaignFolderId')).setName(folderName)
+  } else {
+    // else, create folders
+    var campaignsFolder = DriveApp.getFolderById(archivedCampaignsFolderId);
+    var campaignFolder = campaignsFolder.createFolder(folderName)
+    documentProperties.setProperty("campaignFolderId",campaignFolder.getId())
+    var imageCampaignFolder = campaignFolder.createFolder("fichiers liés")
+    documentProperties.setProperty("imagesCampaignFolderId",imageCampaignFolder.getId())
+  }
 }
 
 
