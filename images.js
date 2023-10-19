@@ -77,6 +77,15 @@ function addImage(isPositionedImage = true) {
         // inline images must be 600px width max
         resizeImage(image, 600)
       }
+      // TODO auto center image
+      // var parent = image.getParent()
+      // console.log(parent.getType())
+      // while (parent.getType() == DocumentApp.ElementType.PARAGRAPH) {
+      //   parent = parent.getParent()
+      // }
+      // var style = {}
+      // style[DocumentApp.Attribute.HORIZONTAL_ALIGNMENT] = DocumentApp.HorizontalAlignment.CENTER
+      // parent.setAttributes(style)
       
       // store image data for html conversion
       image.setAltDescription(url)
