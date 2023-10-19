@@ -10,13 +10,8 @@
  * since getUi().arlet() and getUi().prompt() can't be called in App Script IDE
  */
 function menuCreateCampaign() {
-  // prompt user to clear or not document's properties
-  var clearDataResponse = DocumentApp.getUi().alert('Voulez vous reinitialiser les données du document ?',DocumentApp.getUi().ButtonSet.YES_NO);
-  var clearData = false;
-  if (clearDataResponse == DocumentApp.getUi().Button.YES) clearData = true
-  
   var date = menuPromptSetCampaignDate()
-  let id = createCampaign(clearData,date)
+  let id = createCampaign(date)
   DocumentApp.getUi().alert('La campagne a bien été crée.\n Id de la campagne : '+id)
 }
 
@@ -28,18 +23,23 @@ function menuCreateCampaign() {
  * @returns {string} new campaign id
  */
 
-function createCampaign(clearData = false, date ='2023-09-01') {
+function createCampaign(date ='2023-09-01') {
 
-  if (clearData) { 
-    clearButtons()
-    clearCampaignConfiguration()
-    clearDocImages()
-    clearCampainFoldersIds()
-  }
-  // Logger.log('data cleared')
-
-  incrementCampaignNumber();
-  setCampaignDate(date)
+  clearButtons()
+  clearCampaignConfiguration()
+  clearDocImages()
+  clearCampainFoldersIds()
+  documentProperties.deleteProperty('campaignFolderId')
+  documentProperties.deleteProperty('imagesCampaignFolderId')
+  
+  let num = Number(getCampaignNumber())
+  num++
+  documentProperties.setProperty('campaignNumber',num)
+  documentProperties.setProperty('date', date)
+  updateCampaignName()
+  updateCampaignSubject()
+  updateDocTitle()
+  createCampaignFolders()
 
   // Logger.log("confg seted")
 
@@ -168,7 +168,7 @@ function setCampaignNumber(number) {
   updateCampaignName()
   updateCampaignSubject()
   updateDocTitle()
-  createUpdateCampaignFolders()
+  updateCampaignFolders()
   return number
 }
 
@@ -271,7 +271,7 @@ function menuPromptSetCampaignDate(){
 function setCampaignDate(dateStr) {
   documentProperties.setProperty('date',dateStr)
   updateCampaignName()
-  createUpdateCampaignFolders()
+  updateCampaignFolders()
   updateDocTitle()
   
 }
@@ -294,7 +294,7 @@ function updateCampaignName(){
 
 /**
  * create campaign's Gdrive folders 
- * or update ther names if they exist
+ * 
  * 
  * two nested folders are created for each campaign il the archived campaigns forlder
  * the archived campaigns folder id is store in the archivedCampaignsFolderId const
@@ -304,19 +304,24 @@ function updateCampaignName(){
  * 
  * @param {string} name the campaign sending date 'YYYY-MM-DD'
  */
-function createUpdateCampaignFolders() {  
+function updateCampaignFolders() {  
   var folderName = "n°"+getCampaignNumber()+" - "+getCampaignDate()
   // if the campaign folders have already been created update the name
-  if(documentProperties.getProperty('campaignFolderId')){
-    DriveApp.getFolderById(documentProperties.getProperty('campaignFolderId')).setName(folderName)
-  } else {
-    // else, create folders
-    var campaignsFolder = DriveApp.getFolderById(archivedCampaignsFolderId);
-    var campaignFolder = campaignsFolder.createFolder(folderName)
-    documentProperties.setProperty("campaignFolderId",campaignFolder.getId())
-    var imageCampaignFolder = campaignFolder.createFolder("fichiers liés")
-    documentProperties.setProperty("imagesCampaignFolderId",imageCampaignFolder.getId())
-  }
+  
+  DriveApp.getFolderById(documentProperties.getProperty('campaignFolderId')).setName(folderName)
+
+}
+
+/**
+ * update campaign's Gdrive folders
+ */
+function createCampaignFolders() {
+  var folderName = "n°" + getCampaignNumber() + " - " + getCampaignDate()
+  var campaignsFolder = DriveApp.getFolderById(archivedCampaignsFolderId);
+  var campaignFolder = campaignsFolder.createFolder(folderName)
+  documentProperties.setProperty("campaignFolderId",campaignFolder.getId())
+  var imageCampaignFolder = campaignFolder.createFolder("fichiers liés")
+  documentProperties.setProperty("imagesCampaignFolderId",imageCampaignFolder.getId())
 }
 
 
