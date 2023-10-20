@@ -29,9 +29,7 @@ function createCampaign(date ='2023-09-01') {
   clearCampaignConfiguration()
   clearDocImages()
   clearCampainFoldersIds()
-  documentProperties.deleteProperty('campaignFolderId')
-  documentProperties.deleteProperty('imagesCampaignFolderId')
-  
+    
   let num = Number(getCampaignNumber())
   num++
   documentProperties.setProperty('campaignNumber',num)
