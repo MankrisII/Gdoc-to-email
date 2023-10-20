@@ -119,6 +119,14 @@ function isDebug() {
   return fale
 }
 
+function getParagraphParent(element) {
+  while(element.getParent()){
+    if(element.getType() == DocumentApp.ElementType.PARAGRAPH) return element
+    element = element.getParent()
+  }
+  return false
+}
+
 // send an email to contributors to give the link of the Gdocs et the dead line
 function sendForContributions(){
   var campaignSendingDate = new Date(documentProperties.getProperty('date'))
