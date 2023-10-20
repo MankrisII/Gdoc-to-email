@@ -35,8 +35,8 @@ function addImage(isPositionedImage = true) {
   var cursor = DocumentApp.getActiveDocument().getCursor();
   if (!cursor) return DocumentApp.getUi().alert('Cannot find a cursor.');
   
-  var element = cursor.getElement()
-  if( element.getType() != DocumentApp.ElementType.PARAGRAPH ||
+  var element = getParagraphParent(cursor.getElement())
+  if (!element ||
       element.getHeading() != DocumentApp.ParagraphHeading.NORMAL) 
         return DocumentApp.getUi().alert('Cannot insert image here.');
         
@@ -71,16 +71,21 @@ function addPositionedImage(url, element) {
 }
 
 function addInlineImage(url, cursor) {
-  var imageBlob = UrlFetchApp.fetch(url)
-  var image = cursor.insertInlineImage(imageBlob)
+  var image, parent, imageBlob = UrlFetchApp.fetch(url)
 
+  if (cursor.getElement().getText()) {
+    var element = getParagraphParent(cursor.getElement())
+    var body = DocumentApp.getActiveDocument().getBody();
+    var id = body.getChildIndex(element)
+    parent = body.insertParagraph(id, "")
+    image = parent.insertInlineImage(0,imageBlob)
+  } else {
+    image = cursor.insertInlineImage(imageBlob)
+    parent = image.getParent()
+  }
+  
   if (image.getWidth() > 600) {
     resizeImage(image, 600)
-  }
-
-  var parent = image.getParent()
-  while (parent.getType() != DocumentApp.ElementType.PARAGRAPH) {
-    parent = parent.getParent()
   }
 
   var style = {}
