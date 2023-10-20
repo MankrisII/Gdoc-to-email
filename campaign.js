@@ -305,7 +305,7 @@ function updateCampaignName(){
  * @param {string} name the campaign sending date 'YYYY-MM-DD'
  */
 function updateCampaignFolders() {  
-  var folderName = "n°"+getCampaignNumber()+" - "+getCampaignDate()
+  var folderName = "n°"+getCampaignNumber()+" - "+getCampaignDate() + (debug() ? ' - dev' : '')
   // if the campaign folders have already been created update the name
   
   DriveApp.getFolderById(documentProperties.getProperty('campaignFolderId')).setName(folderName)
@@ -316,7 +316,7 @@ function updateCampaignFolders() {
  * update campaign's Gdrive folders
  */
 function createCampaignFolders() {
-  var folderName = "n°" + getCampaignNumber() + " - " + getCampaignDate()
+  var folderName = "n°" + getCampaignNumber() + " - " + getCampaignDate() + (debug() ? ' - dev' : '')
   var campaignsFolder = DriveApp.getFolderById(archivedCampaignsFolderId);
   var campaignFolder = campaignsFolder.createFolder(folderName)
   documentProperties.setProperty("campaignFolderId",campaignFolder.getId())
