@@ -36,61 +36,60 @@ function addImage(isPositionedImage = true) {
   if (!cursor) return DocumentApp.getUi().alert('Cannot find a cursor.');
   
   var element = cursor.getElement()
-  if(!(element.getType() == DocumentApp.ElementType.PARAGRAPH &&
-    element.getHeading() == DocumentApp.ParagraphHeading.NORMAL)) // check that image is not insert in heading 
-    return DocumentApp.getUi().alert('Cannot insert image here.');
+  if( element.getType() != DocumentApp.ElementType.PARAGRAPH ||
+      element.getHeading() != DocumentApp.ParagraphHeading.NORMAL) 
+        return DocumentApp.getUi().alert('Cannot insert image here.');
         
   // ask for image url
   var imageUrlPrompt = DocumentApp.getUi().prompt('Insérer une image',defaultAssetsFolderPath,DocumentApp.getUi().ButtonSet.OK_CANCEL);
 
-  if (imageUrlPrompt.getSelectedButton() == DocumentApp.getUi().Button.OK) {
-    // Fetches the specified image URL.  
-    // Adds the image to the document, anchored to the first paragraph.
+  if (imageUrlPrompt.getSelectedButton() != DocumentApp.getUi().Button.OK) return
     
-    // is the complete url or just the image name is provided ?
-    var url = formatAssetsUrl(imageUrlPrompt.getResponseText())
-    /*if(!imageUrlPrompt.getResponseText().match(/^https?:\/\//)){
-      url = defaultAssetsFolderPath+imageUrlPrompt.getResponseText()
-    }else{
-      url = imageUrlPrompt.getResponseText()
-    }*/
-    
-    // download the image
-    var imageBlob = UrlFetchApp.fetch(url)
-    var image
-
-    if(isPositionedImage){
-      image = element.addPositionedImage(imageBlob);
-      
-      // positioned images must be 250px width
-      resizeImage(image, 250) 
-      
-      // store image data for html conversion
-      var docImages = getDocImages();
-      var imgData = {id : image.getId(), url : url}
-      docImages.push(imgData)
-      setDocImages(docImages)
-
-    }else{
-      image = cursor.insertInlineImage(imageBlob)
-      if (image.getWidth() > 600) {
-        // inline images must be 600px width max
-        resizeImage(image, 600)
-      }
-      // TODO auto center image
-      // var parent = image.getParent()
-      // console.log(parent.getType())
-      // while (parent.getType() == DocumentApp.ElementType.PARAGRAPH) {
-      //   parent = parent.getParent()
-      // }
-      // var style = {}
-      // style[DocumentApp.Attribute.HORIZONTAL_ALIGNMENT] = DocumentApp.HorizontalAlignment.CENTER
-      // parent.setAttributes(style)
-      
-      // store image data for html conversion
-      image.setAltDescription(url)
-    }
+  // is the complete url or just the image name is provided ?
+  var url = formatAssetsUrl(imageUrlPrompt.getResponseText())
+  
+  if (isPositionedImage) {
+    addPositionedImage(url, element)
+  } else {
+    addInlineImage(url, cursor)
   }
+  
+}
+
+function addPositionedImage(url, element) {
+  var imageBlob = UrlFetchApp.fetch(url)
+  var image = element.addPositionedImage(imageBlob);
+  
+  // positioned images must be 250px width
+  resizeImage(image, 250) 
+  
+  // store image data for html conversion
+  var docImages = getDocImages();
+  var imgData = {id : image.getId(), url : url}
+  docImages.push(imgData)
+  setDocImages(docImages)
+}
+
+function addInlineImage(url, cursor) {
+  var imageBlob = UrlFetchApp.fetch(url)
+  var image = cursor.insertInlineImage(imageBlob)
+
+  if (image.getWidth() > 600) {
+    resizeImage(image, 600)
+  }
+
+  var parent = image.getParent()
+  while (parent.getType() != DocumentApp.ElementType.PARAGRAPH) {
+    parent = parent.getParent()
+  }
+
+  var style = {}
+  style[DocumentApp.Attribute.HORIZONTAL_ALIGNMENT] = DocumentApp.HorizontalAlignment.CENTER
+  style[DocumentApp.Attribute.HEADING] = DocumentApp.ParagraphHeading.NORMAL
+  parent.setAttributes(style)
+  
+  // store image data for html conversion
+  image.setAltDescription(url)
 }
 
 /**
