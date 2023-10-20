@@ -114,7 +114,7 @@ function onOpen() {
   
 }
 
-function debug() {
+function isDebug() {
   if (documentProperties.getProperty('debug') && documentProperties.getProperty('debug') == 'true') return true
   return fale
 }
