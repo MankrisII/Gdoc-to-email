@@ -48,16 +48,16 @@ const fileAndFolderIdsEcxcludedFromArchiving = [
 ]
 const documentProperties = PropertiesService.getDocumentProperties();
 
-function initDebug() {
-    var debug = false
-    var folders = DriveApp.getFileById(DocumentApp.getActiveDocument().getId()).getParents()
-    while (folders.hasNext()) {
-      var folderid = folders.next()
-      if(folders.next().getId() == "11lt-KGJtXpZaPUbYRVTJ3-tzUjvW48fL") return true
-    }
-  return false
-}
-const debug = initDebug();
+//TODO add debug const
+// function initDebug() {
+//     var folders = DriveApp.getFileById(DocumentApp.getActiveDocument().getId()).getParents()
+//     while (folders.hasNext()) {
+//       var folderid = folders.next()
+//       if(folders.next().getId() == "11lt-KGJtXpZaPUbYRVTJ3-tzUjvW48fL") return true
+//     }
+//   return false
+// }
+// const debug = initDebug();
 
 // option for brevo API requests
 var brevoRequestOptions = {
