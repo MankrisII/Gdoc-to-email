@@ -171,7 +171,7 @@ h1{
   margin-top: 25px;
 }
 `;
-
+var currentTitle
 var stylesObj
 /**
  * Trasform CSS style above declare in "style" const to an object
@@ -357,6 +357,9 @@ function processPositionedImages(item) {
   var image = item.getPositionedImages()[0];
 
   var imageData = getPositionImage(image.getId());
+  if(!imageData){
+    throw(new Error("L'image positionné n'a pas d'url associée' : '"+currentTitle+"'"))
+  }
 
   html += `<div class="flex-container" ${getStyles('.flex-container','#content .flex-container')}>
                 <div class="flex-element flex-element-img" ${getStyles('.flex-element', '.flex-element-img')}>
@@ -409,12 +412,13 @@ function processHeading(item) {
       
   switch (item.getHeading()) {
     case DocumentApp.ParagraphHeading.HEADING6: 
-      prefix = "<h6>", suffix = "</h6>"; break;
+      prefix = "<h6>", suffix = "</h6>"; break;  
     case DocumentApp.ParagraphHeading.HEADING5: 
       prefix = "<h5>", suffix = "</h5>"; break;
     case DocumentApp.ParagraphHeading.HEADING4:
       prefix = "<h4>", suffix = "</h4>"; break;
     case DocumentApp.ParagraphHeading.HEADING3:
+      currentTitle = item.getText()
       prefix = processPositionedImages()
       if(firstH3){
         prefix += `<h3 class="firstH3" ${getStyles('#content h3','#content h3.firstH3')}>`;
