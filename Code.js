@@ -35,7 +35,7 @@ const defaltButtonsUrls = [
   "https://www.ccdb26.fr/actualites/"
 ];
 // url of public storage for images displayed in html's campaigns
-const defaultAssetsFolderPath = 'https://mairie-dieulefit.fr/images/stories/contributeurs/actualites/a_la_une/2023/';
+const defaultAssetsFolderPath = 'https://mairie-dieulefit.fr/images/stories/contributeurs/actualites/a_la_une/2024/';
 // GDocs folder and files
 const archivedCampaignsFolderId = "1xd2xA-2wIfRgFT03TO1QHXMFTr3PQM8G"; // archives's folder for 2023 campains
 const fileAndFolderIdsEcxcludedFromArchiving = [
