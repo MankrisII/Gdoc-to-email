@@ -358,7 +358,9 @@ function processPositionedImages(item) {
 
   var imageData = getPositionImage(image.getId());
   if(!imageData){
-    throw(new Error("L'image positionné n'a pas d'url associée' : '"+currentTitle+"'"))
+    console.log(item.getText())
+    throw(new Error("L'image positionné n'a pas de données : '"+currentTitle+"'"))
+    
   }
 
   html += `<div class="flex-container" ${getStyles('.flex-container','#content .flex-container')}>
