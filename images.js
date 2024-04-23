@@ -40,8 +40,10 @@ function addImage(isPositionedImage = true) {
       element.getHeading() != DocumentApp.ParagraphHeading.NORMAL) 
         return DocumentApp.getUi().alert('Cannot insert image here.');
         
+  // get url images and display it in prompt in case we have to reload it and retreaved the url
+  var images = getDocImages().map(i => i.url).join("\n")
   // ask for image url
-  var imageUrlPrompt = DocumentApp.getUi().prompt('Insérer une image',defaultAssetsFolderPath,DocumentApp.getUi().ButtonSet.OK_CANCEL);
+  var imageUrlPrompt = DocumentApp.getUi().prompt('Insérer une image',images+"\n"+defaultAssetsFolderPath,DocumentApp.getUi().ButtonSet.OK_CANCEL);
 
   if (imageUrlPrompt.getSelectedButton() != DocumentApp.getUi().Button.OK) return
     
