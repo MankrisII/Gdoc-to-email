@@ -1,5 +1,5 @@
 var mediaQueries = `@media screen and (max-width: 600px) {
-    .flex-element {
+    .flex-element-old {
         width: 100% !important;
         margin-left: 0 !important;
     }
@@ -15,13 +15,14 @@ body {
     margin: 0;
 }
 
-#content {
+#content ,#header{
     text-align: left;
     font-size: 18px;
     max-width: 600px;
     width: 100%;
     margin: auto;
     background-color: #fff;
+    padding-top : 21px;
 }
 
 .center {
@@ -29,28 +30,35 @@ body {
 }
 
 #content h3,
-#content p,
+#content p,{
+  margin : 0 15px 0 15px;
+}
 #content .flex-container{
-    margin-left : 15px;
-    margin-right : 15px;
+    
 }
 
 .flex-container {
-    display: flex;
-    flex-wrap: wrap;
+    
+}
+.flex-element{
+  width: calc((600px - 100%)*600);
+  max-width: 100%;
+  display: inline-block;
+  vertical-align: top;
 }
 
 .flex-element-img {
     text-align: center;
+    margin-left:15px;
 }
 
 .flex-element-text {
-    width: 301px;
-    margin-left: 15px;
+    min-width: 327px;
 }
 
 .flex-element-img {
-    width: 250px;
+  max-width: calc(100% - 30px);
+  min-width: 250px;
 }
 
 .flex-element p {
@@ -101,6 +109,7 @@ body {
     margin-top: 27px;
     border-top: 1px solid #ae9e9e;
     padding-top: 15px;
+    margin-bottom : 15px;
 }
 
 #content h3.firstH3 {
@@ -131,7 +140,7 @@ body {
 }
 #header{
     font-weight: bold;
-    margin: 0!important;
+    padding-top:0;
 }
 h1{
     background-color: #DCDBDB;
@@ -141,13 +150,13 @@ h1{
     padding: 12px 15px;
 }
 #logo-container{
-    width: 32%;
+    min-width: 235px;
     text-align: center;
     padding-top: 20px;
 
 }
 #header-left{
-    width: 68%;
+    min-width: 360px;
 }
 
 #header-left p{
@@ -271,22 +280,29 @@ function ConvertGoogleDocToCleanHtml() {
   var date = new Date(documentProperties.getProperty('date'));
   var dateOptions = {  year: 'numeric', month: 'long', day: 'numeric' }
   
+  //TODO do not include styles in head in final email
+  /*
+  saved styles in head
+  <style>
+    ${mediaQueries}
+    ${styles}
+  </style>
+
+  */
   var html = `<!DOCTYPE html> 
               <html>
               <head>
                 <meta charset="utf-8">
                 <title>${getCampaignSubject()}</title>
+                <meta name="viewport" content="width=device-width,initiale-scale=1.0,user-scalable=no">
               </head>
-              <style>
-                  ${mediaQueries}
-                  ${styles}
-                  </style>
+              
                 <body ${getStyles('body')}>
                   
                   
-                    <div id="content" ${getStyles('#content')}>
+                    
                     <div class="flex-container" id="header" ${getStyles('#header','#content .flex-container','.flex-container')}>
-                      <div id="header-left" class="flex-element" ${getStyles('#header-left')}>
+                      <div id="header-left" class="flex-element" ${getStyles('#header-left','.flex-element')}>
                           <h1 ${getStyles('h1')}>Lettre d'information de Dieulefit</h1>
                           <p ${getStyles('#header-left_p')}>n°${getCampaignNumber()} - ${date.toLocaleDateString('fr-FR', dateOptions)}<br/>
                           <a href="//www.mairie-dieulefit.fr/">https://www.mairie-dieulefit.fr/</a></p>
@@ -294,7 +310,8 @@ function ConvertGoogleDocToCleanHtml() {
                       <div id="logo-container" class="flex-element" ${getStyles("#logo-container",".flex-element")}>
                           <img src="https://img.mailinblue.com/5899350/images/content_library/original/6426f218849cd96ad040ed48.jpg" alt="logo Dieulefit">
                       </div>
-                    </div>`;
+                    </div>
+                    <div id="content" ${getStyles('#content')}>`;
                     
                     html += output.join('\r');
                     html += `
