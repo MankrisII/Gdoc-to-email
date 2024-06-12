@@ -37,7 +37,8 @@ const defaltButtonsUrls = [
 // url of public storage for images displayed in html's campaigns
 const defaultAssetsFolderPath = 'https://mairie-dieulefit.fr/images/stories/contributeurs/actualites/a_la_une/2024/';
 // GDocs folder and files
-const archivedCampaignsFolderId = "1xd2xA-2wIfRgFT03TO1QHXMFTr3PQM8G"; // archives's folder for 2023 campains
+const archivedCampaignsFolderId = "1_uFnHE-buS2p4NOHdQIvXShBE6dzB5rY"; // archives's folder for 2024 campains
+// files and folders excluded from archiving
 const fileAndFolderIdsEcxcludedFromArchiving = [
   DocumentApp.getActiveDocument().getId(),
   "1SfOEQED15_4t1upUk-ztXymMf6t7dP0hNw8uNBqm000",
@@ -81,8 +82,11 @@ var defaultCampaignConf = {
 
 // initialisation
 function onOpen() {
-  //checkCampaignStatus()
-  if(Session.getEffectiveUser().getEmail() == "mancini.christophe@gmail.com"){
+  
+  var email = Session.getActiveUser().getEmail();
+  
+  if(adminEmails.includes(email)){
+      
     DocumentApp.getUi()
     .createMenu('Newsletter mairie')
     .addItem('Creer une nouvelle campagne', 'menuCreateCampaign')
@@ -107,6 +111,7 @@ function onOpen() {
     .addItem('Inserer un bouton', 'menuAddButton')
     .addItem('Inserer une image en ligne', 'menuAddinlineImage')
     .addItem('Inserer une image positionnée', 'menuAddPositionedImage')
+    .addItem('recharger l\'image','reloadImage')
     .addItem('test selection image', 'showDialog')
     
     .addToUi();
@@ -143,7 +148,6 @@ Vous avez jusqu’au ${deadLineToContribute.toLocaleDateString('fr-FR', dateOpti
 Merci,`;
 Logger.log(content)
   MailApp.sendEmail({
-     //to: Session.getActiveUser().getEmail(),
      to : contributorsEmailsList,
      subject: `Prochaine newsletter du ${campaignSendingDate.toLocaleDateString('fr-FR', dateOptions)}`,
      body: content,
@@ -210,7 +214,8 @@ function emailHtml(html, images) {
   var name = DocumentApp.getActiveDocument().getName()+".html";
   attachments.push({"fileName":name, "mimeType": "text/html", "content": html});
   MailApp.sendEmail({
-     to: Session.getActiveUser().getEmail(),
+     //to: Session.getActiveUser().getEmail(),
+     to : adminEmails.join(','),
      subject: name,
      htmlBody: html,
      attachments: attachments
