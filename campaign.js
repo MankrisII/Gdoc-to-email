@@ -395,7 +395,7 @@ function sendTestWithBrevo(){
   options.method = 'POST';
   options.payload = JSON.stringify({
     "emailTo": [
-      "mancini.christophe@gmail.com"
+      toEmail
     ]
   })
   var responseSendTest = UrlFetchApp.fetch('https://api.brevo.com/v3/emailCampaigns/'+getCampaignId()+'/sendTest', options);

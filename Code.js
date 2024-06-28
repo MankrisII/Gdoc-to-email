@@ -101,8 +101,14 @@ function onOpen() {
       .addSeparator()
       .addItem('modifier la date d\'envoie de la campagne','menuPromptSetCampaignDate')
     )
-    .addItem('Envoyer un test avec Brevo', 'menuSendTestWithBrevo')
-    .addItem('Envoyer le HTML par mail','sendHtmlByEmail')
+    .addSubMenu(DocumentApp.getUi().createMenu('Envoyer un test à...')
+      .addItem('Christophe','sendHtmlByEmailToChris')
+      .addItem('Samuel','sendHtmlByEmailToSam')
+    )
+    .addSubMenu(DocumentApp.getUi().createMenu('Envoyer un test avec Brevo à...')
+      .addItem('Christophe','menuSendTestWithBrevoToChris')
+      .addItem('Samuel','menuSendTestWithBrevoToSam')
+    )
     .addItem('Archiver la newsletter', 'archiver')
     .addSeparator()
     .addItem('Envoyer le mail à la plénière', 'sendForContributions')
@@ -148,7 +154,8 @@ Vous avez jusqu’au ${deadLineToContribute.toLocaleDateString('fr-FR', dateOpti
 Merci,`;
 Logger.log(content)
   MailApp.sendEmail({
-     to : contributorsEmailsList,
+     //to: Session.getActiveUser().getEmail(),
+     to : adminEmails.join(','),
      subject: `Prochaine newsletter du ${campaignSendingDate.toLocaleDateString('fr-FR', dateOptions)}`,
      body: content,
    });
@@ -202,7 +209,27 @@ function updateDocTitle(){
   return
 }
 
+
+
 // send the doc converted to html by email
+var toEmail
+
+function menuSendTestWithBrevoToChris(){
+  toEmail = adminEmails[1]
+  menuSendTestWithBrevo()
+}
+function sendHtmlByEmailToChris(){
+  toEmail = adminEmails[1]
+  sendHtmlByEmail()
+}
+function  menuSendTestWithBrevoToSam(){
+  toEmail = adminEmails[2]
+   menuSendTestWithBrevo()
+}
+function sendHtmlByEmailToSam(){
+  toEmail = adminEmails[2]
+  sendHtmlByEmail()
+}
 function sendHtmlByEmail(){
   var html = ConvertGoogleDocToCleanHtml();
   emailHtml(html);
@@ -214,8 +241,7 @@ function emailHtml(html, images) {
   var name = DocumentApp.getActiveDocument().getName()+".html";
   attachments.push({"fileName":name, "mimeType": "text/html", "content": html});
   MailApp.sendEmail({
-     //to: Session.getActiveUser().getEmail(),
-     to : adminEmails.join(','),
+     to : toEmail,
      subject: name,
      htmlBody: html,
      attachments: attachments
