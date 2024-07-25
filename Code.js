@@ -119,6 +119,10 @@ function onOpen() {
     .addItem('Inserer une image positionnée', 'menuAddPositionedImage')
     .addItem('recharger l\'image','reloadImage')
     .addItem('test selection image', 'showDialog')
+    .addSeparator()
+    .addItem('Supprimer les paragraphes vides', 'deletEmptyParagraph')
+    .addItem('Supprimer les nouveaux paragraphes', 'deleteNewParagraph')
+    .addItem('Supprimer les paragraphes vides et nouveaux', 'deletEmptyAndNewParagraph')
     
     .addToUi();
   }
@@ -209,6 +213,52 @@ function updateDocTitle(){
   return
 }
 
+function deletEmptyParagraph(){
+  if(!DocumentApp.getActiveDocument().getSelection()) return
+  
+  let range = DocumentApp.getActiveDocument().getSelection().getRangeElements()
+
+  for (let e of range) {
+    if (e.getElement().getType() == DocumentApp.ElementType.PARAGRAPH && e.getElement().getText() == "") {
+      e.getElement().removeFromParent()
+    }
+  }
+}
+
+function deleteNewParagraph(){
+  if(!DocumentApp.getActiveDocument().getSelection()) return
+  let range = DocumentApp.getActiveDocument().getSelection().getRangeElements()
+
+  var prevIsParagraph = false
+  var prevId = 0
+
+  for(var i = 0 ; i<range.length ; i++){
+    let e = range[i].getElement()
+    console.log(e.getText())
+    console.log(e.getType().toString())
+    if((e.getType() == DocumentApp.ElementType.PARAGRAPH || e.getType() == DocumentApp.ElementType.TEXT) && prevIsParagraph == false){
+      prevIsParagraph = true
+      prevId = i
+      continue
+    } 
+
+    if(e.getType() != DocumentApp.ElementType.PARAGRAPH && e.getType() != DocumentApp.ElementType.TEXT && prevIsParagraph == true){
+      prevIsParagraph = false 
+      continue
+    }
+
+    if((e.getType() == DocumentApp.ElementType.PARAGRAPH || e.getType() == DocumentApp.ElementType.TEXT) &&  prevIsParagraph == true){
+      let prev = range[prevId].getElement()
+      prev.appendText("\n"+e.getText())
+      e.removeFromParent()
+    }
+  }
+}
+
+function deletEmptyAndNewParagraph(){
+  deletEmptyParagraph()
+  deleteNewParagraph()
+}
 
 
 // send the doc converted to html by email
