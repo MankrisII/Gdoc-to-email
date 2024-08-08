@@ -34,6 +34,7 @@ const defaltButtonsUrls = [
   "https://www.dieulefit-tourisme.com/votre-sejour/agenda/tout-lagenda/",
   "https://www.ccdb26.fr/actualites/"
 ];
+const templateFileId ='1l9lfuB-sSF2IDiCW3p3EEokgOL96b5vyvZZ59_QbF1c'
 // url of public storage for images displayed in html's campaigns
 const defaultAssetsFolderPath = 'https://mairie-dieulefit.fr/images/stories/contributeurs/actualites/a_la_une/2024/';
 // GDocs folder and files

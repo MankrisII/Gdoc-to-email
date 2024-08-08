@@ -1,5 +1,6 @@
 function archiver() {
-   var archivedDoc = archiveNewsletterDoc()
+
+  var archivedDoc = archiveNewsletterDoc()
   updatePreviousNewsletterLink(archivedDoc)
   archiveLinkedFiles()
   archiveOnMairieWebSite()
@@ -57,7 +58,7 @@ function archiveLinkedFiles() {
   var currentFile = DriveApp.getFileById(DocumentApp.getActiveDocument().getId())
   var currentFolder = currentFile.getParents().next()
   var destyFolder = DriveApp.getFolderById(documentProperties.getProperty('imagesCampaignFolderId'))
-  
+
   var files = currentFolder.getFiles()
 
   while (files.hasNext()) {
@@ -89,7 +90,7 @@ function archiveOnMairieWebSite() {
       html: ConvertGoogleDocToCleanHtml(),
       title: `n°${getCampaignNumber()} - ${date.toLocaleDateString('fr-FR', dateOptions)}`,
       date: documentProperties.getProperty('date'),
-      num : getCampaignNumber().toString(),
+      num: getCampaignNumber().toString(),
       apiKey: mairieApiKey,
     }
   }
@@ -97,32 +98,46 @@ function archiveOnMairieWebSite() {
   Logger.log(resp.getContentText())
 }
 
-function clearGoogleDoc(){
-  var body = DocumentApp.getActiveDocument().getBody();
-  var currentChildId = getContentFirstChildId()
-  var child = body.getChild(currentChildId)
-  
-  while (child.getHeading() != DocumentApp.ParagraphHeading.HEADING3 || child.getText() != "À venir" ) {
-    var t = child.getText()
-    
-    if (child.getHeading() == DocumentApp.ParagraphHeading.HEADING2) {
-      currentChildId ++
-      var p = body.insertParagraph(currentChildId,"Titre")
-      p.setHeading(DocumentApp.ParagraphHeading.HEADING3)
-      currentChildId ++
-      p = body.insertParagraph(currentChildId, "Description")
-      currentChildId ++
-      child = body.getChild(currentChildId)
-      continue
-    }
+function clearGoogleDoc() {
+  var srcBody = DocumentApp.getActiveDocument().getBody();
+  var startChildId = getContentFirstChildId()
+  var currentChildId = startChildId
+  var child = srcBody.getChild(currentChildId)
 
-    if(isDefaultButton(child)){
-      currentChildId ++
-      child = body.getChild(currentChildId)
-      continue
-    }
+  var templateFile = DocumentApp.openById(templateFileId)
+  var templateBody = templateFile.getBody()
+  var srcBodyNumChildren = srcBody.getNumChildren()
 
+  // add an empty paragpraph if there is no => cant remove the last paragraph
+  if (srcBody.getChild(srcBodyNumChildren - 1).getText() != '')
+    srcBody.appendParagraph('')
+
+  // empty current body
+  while (currentChildId < srcBody.getNumChildren() - 1) {
     child.removeFromParent()
-    child = body.getChild(currentChildId)
+    child = srcBody.getChild(currentChildId)
   }
+
+  // copy template body
+  for (var i = 0; i < templateBody.getNumChildren() - 1; i++) {
+    var templateChild = templateBody.getChild(i).copy()
+    var templateChildType = templateChild.getType()
+
+    switch (templateChildType) {
+
+      case DocumentApp.ElementType.PARAGRAPH:
+        srcBody.appendParagraph(templateChild)
+        break;
+      
+      case DocumentApp.ElementType.LIST_ITEM:
+        var item = srcBody.appendListItem(templateChild)
+        item.setGlyphType(templateBody.getChild(i).getGlyphType())
+        item.setSpacingAfter(templateChild.getSpacingAfter())
+        item.setSpacingBefore(templateChild.getSpacingBefore())
+        break;
+    }
+  }
+
+  // remove empty paragraph préviously added
+  srcBody.getChild(startChildId).removeFromParent()
 }
