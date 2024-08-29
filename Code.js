@@ -93,7 +93,9 @@ function onOpen() {
     .addItem('Creer une nouvelle campagne', 'menuCreateCampaign')
     .addSubMenu(DocumentApp.getUi().createMenu('Configuration')
       .addItem('Vérifier de statut de la campagne', 'menuCheckCampaignStatus')
+      .addSeparator()
       .addItem('Afficher l\'id de la campagne', 'menuDisplayCampaignId')
+      .addItem('Modifier l\'id de la campagne', 'menuPromptCampaignId')
       .addSeparator()
       .addItem('Afficher le numéro de la campagne', 'menuDisplayCampaignNumber')
       .addItem('Modifier le numéro de la campagne', 'menuPromptSetCampaignNumber')
@@ -105,6 +107,7 @@ function onOpen() {
     .addSubMenu(DocumentApp.getUi().createMenu('Envoyer un test à...')
       .addItem('Christophe','sendHtmlByEmailToChris')
       .addItem('Samuel','sendHtmlByEmailToSam')
+      .addItem("Reseigner l'email",'sendHtmlByEmailToPrompt')
     )
     .addSubMenu(DocumentApp.getUi().createMenu('Envoyer un test avec Brevo à...')
       .addItem('Christophe','menuSendTestWithBrevoToChris')
@@ -280,6 +283,13 @@ function  menuSendTestWithBrevoToSam(){
 function sendHtmlByEmailToSam(){
   toEmail = adminEmails[2]
   sendHtmlByEmail()
+}
+function sendHtmlByEmailToPrompt(){
+  let rep = DocumentApp.getUi().prompt("Renseignez l'adresse email",DocumentApp.getUi().ButtonSet.OK_CANCEL);
+  if(rep.getSelectedButton() == DocumentApp.getUi().ButtonSet.OK){
+    toEmail = rep.getResponseText()
+    sendHtmlByEmail() 
+  }
 }
 function sendHtmlByEmail(){
   var html = ConvertGoogleDocToCleanHtml();
