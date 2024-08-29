@@ -286,7 +286,7 @@ function sendHtmlByEmailToSam(){
 }
 function sendHtmlByEmailToPrompt(){
   let rep = DocumentApp.getUi().prompt("Renseignez l'adresse email",DocumentApp.getUi().ButtonSet.OK_CANCEL);
-  if(rep.getSelectedButton() == DocumentApp.getUi().ButtonSet.OK){
+  if(rep.getSelectedButton() == DocumentApp.getUi().Button.OK){
     toEmail = rep.getResponseText()
     sendHtmlByEmail() 
   }
